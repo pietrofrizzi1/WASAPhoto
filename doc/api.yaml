@@ -1,273 +1,578 @@
-openapi: 3.0.0
-servers:
-  - url: "http://localhost:3000"
+
+openapi: 3.0.3
 info:
-  title: Fantastic Coffee (decaffeinated)
-  description: Fantastic Coffee (decaffeinated), the skeleton project for Web and Software architecture course
-  version: 1.0.0
-paths:
-  /status:
-    parameters:
-      - $ref: "#/components/parameters/XAppBuild"
-      - $ref: "#/components/parameters/XAppVersion"
-      - $ref: "#/components/parameters/XAppLanguage"
-      - $ref: "#/components/parameters/XAppPlatform"
-    get:
-      tags: ["General"]
-      operationId: getStatusMessage
-      summary: Get status message for the user about issues / updates
-      description: |-
-        The response contains a status message meant for the user. It might
-        contains information about current technical issues, update messages
-        or general information.
-      responses:
-        "200":
-          description: Status message available
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/StatusInfo"
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
-
-  /:
-    get:
-      tags: ["Group 1"]
-      operationId: index
-      summary: Get an index
-      description: |-
-        This is an example of an index API description
-      responses:
-        "200":
-          description: Successful
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
-  /context:
-    parameters:
-      - $ref: "#/components/parameters/XAppBuild"
-      - $ref: "#/components/parameters/XAppVersion"
-      - $ref: "#/components/parameters/XAppLanguage"
-      - $ref: "#/components/parameters/XAppPlatform"
-    post:
-      tags: ["Group 1"]
-      operationId: getContext
-      summary: Another API example
-      description: |-
-        Example description 2
-      responses:
-        "200":
-          description: Request ok
-          headers:
-            X-Access-Token:
-              description: Access token for authenticated requests
-              schema: { type: string }
-        "500": { $ref: "#/components/responses/InternalServerError" }
-  /authenticated:
-    parameters:
-      - $ref: "#/components/parameters/XAppBuild"
-      - $ref: "#/components/parameters/XAppVersion"
-      - $ref: "#/components/parameters/XAppLanguage"
-      - $ref: "#/components/parameters/XAppPlatform"
-    get:
-      tags: ["Group 2"]
-      operationId: getAuthenticatedExample
-      summary: Get an endpoint with authentication
-      description: |-
-        Get an endpoint with auth
-      security:
-        - LegacyAuth: []
-        - AppToken: []
-      responses:
-        "200":
-          description: Logout successful
-        "500": { $ref: "#/components/responses/InternalServerError" }
-
-  /pictures/{cat}:
-    parameters:
-      - $ref: "#/components/parameters/XAppBuild"
-      - $ref: "#/components/parameters/XAppVersion"
-      - $ref: "#/components/parameters/XAppLanguage"
-      - $ref: "#/components/parameters/XAppPlatform"
-      - $ref: "#/components/parameters/cat"
-    get:
-      tags: ["Cat pictures"]
-      operationId: getCatFromPicture
-      summary: Example of a parameter in URL
-      description: |-
-        Example of a parameter in URL
-      security:
-        - LegacyAuth: []
-      responses:
-        "200":
-          description: Student picture found
-          content:
-            image/png:
-              schema:
-                type: string
-                format: binary
-              example: Picture binary file
-        "404":
-          description: Student picture not found
-        "500": { $ref: "#/components/responses/InternalServerError" }
+  title: WASAPhoto API
+  description: |-
+    Keep in touch with your friends by sharing photos of special moments, 
+    thanks to WASAPhoto! You can upload your photos directly from your PC, 
+    and they will be visible to everyone following you.
+  version: "0.0.1"
+  contact:
+    name: Pietro Frizzi
+    email: frizzi.2005977@studenti.uniroma1.it
 
 
-  /autofeeder/{cat}:
-    parameters:
-      - $ref: "#/components/parameters/XAppBuild"
-      - $ref: "#/components/parameters/XAppVersion"
-      - $ref: "#/components/parameters/XAppLanguage"
-      - $ref: "#/components/parameters/XAppPlatform"
-      - $ref: "#/components/parameters/cat"
-    put:
-      tags: ["Autofeeder"]
-      operationId: createCatAutofeeder
-      summary: Example of PUT operation
-      security:
-        - LegacyAuth: []
-      responses:
-        "200":
-          description: Auto feed enabled
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
-    delete:
-      tags: ["Autofeeder"]
-      operationId: deleteCatAutofeeder
-      summary: Example of DELETE operation
-      security:
-        - LegacyAuth: []
-      responses:
-        "200":
-          description: Auto feed disabled
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
-
-  /session/login:
-    parameters:
-      - $ref: "#/components/parameters/XAppBuild"
-      - $ref: "#/components/parameters/XAppVersion"
-      - $ref: "#/components/parameters/XAppLanguage"
-      - $ref: "#/components/parameters/XAppPlatform"
-    post:
-      tags: ["Session management"]
-      operationId: login
-      summary: Log-in into system
-      description: |-
-        Perform a log-in action using username and password credentials.
-        Returns a token which can be used in authenticated requests.
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                userid:
-                  type: string
-                  pattern: '^[a-zA-Z0-9]+$'
-                  minLength: 3
-                  maxLength: 255
-                password:
-                  type: string
-                  pattern: '^.*?$'
-                  minLength: 8
-                  maxLength: 255
-      responses:
-        "200":
-          description: Login successful
-          headers:
-            X-Access-Token:
-              description: Access token for authenticated requests
-              schema: { type: string }
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "403":
-          description: Login failed
-          headers:
-            X-Message:
-              description: Error message
-              schema: { type: string }
-        "500": { $ref: "#/components/responses/InternalServerError" }
+tags:
+  - name: "Login"
+    description: "Endpoints for authentication"
+  - name: "Users"
+    description: "Endpoints for user actions"
+  - name: "Stream"
+    description: "Endpoints for stream actions"
+  - name: "Photos"
+    description: "Endpoints for photo actions"
+  - name: "Ban"
+    description: "Endpoints for ban actions"
+  - name: "Follow"
+    description: "Endpoints for follow actions"
+  - name: "Likes"
+    description: "Endpoints for like actions"
+  - name: "Comments"
+    description: "Endpoints for comment actions"
 
 
 components:
+  securitySchemes:
+    userAuthorization:
+      type: http
+      scheme: bearer
+  responses:
+    BadRequest: 
+      description: The back-end responds with this error code whenever the error has its origin on client side and no other HTTP status code in the 400 range is suitable
+    Unauthorized: 
+      description: The client did not provide any authentication details for a resource requiring authentication or the provided authentication details are not correct
+    Forbidden: 
+      description: The client did provided correct authentication details, but the privileges/permissions of the provided credentials do not allow to request the resource
+    InternalServerError: 
+      description: The error has its origin on server side
   schemas:
-    StatusInfo:
-      title: Status Info
+    likes:
+      title: likes
+      description: |-
+        list of all the likes
+      type: array
+      items:
+        $ref: '#/components/schemas/user'
+    comments:
+      title: comment
+      description: |
+        a comment
+      type: string
+      minLength: 1
+      maxLength: 500
+    
+    commentssection:
+      title: commentsection
+      type: array
+      items:
+        $ref: '#/components/schemas/comments'
+          
+    user:
+      title: username
+      type: string
+      minLength: 3
+      maxLength: 20
+      
+    
+    profile:
+      title: profile
+      description: |-
+        profile structure
       type: object
       properties:
-        status:
-          type: string
-          enum:
-            - info
-            - warning
-            - critical
-            - ""
-        title: { type: string }
-        message: { type: string }
-        url: { type: string }
-
-  responses:
-    Unauthorized:
-      description: The access token is missing or it's expired
-    BadRequest:
-      description: The request was not compliant with the documentation (eg. missing fields, etc)
-    InternalServerError:
-      description: The server encountered an internal error. Further info in server logs
-
-  securitySchemes:
-    LegacyAuth:
-      type: apiKey
-      in: header
-      name: X-App-Token
+        pictures:
+          $ref: '#/components/schemas/stream'
+        
+        numfollowers:
+          $ref: '#/components/schemas/numberoffollowers'
+        
+        numfollowed:
+          $ref: '#/components/schemas/numberoffollowed'
+         
+    stream:
+      title: stream
       description: |-
-        App session token value. This value is sent by the server in the login
-        and session refresh APIs.
+        stream structure
+      type: array
+      items:
+        $ref: '#/components/schemas/post'
+        
+    
+    post:
+      title: post
+      description: |
+        a comment
+      type: object
+      properties:
+        comments:
+          $ref: '#/components/schemas/commentssection'
+        
+        photo:
+          $ref: '#/components/schemas/photos'
+        numlikes:
+          $ref: '#/components/schemas/numberoflikes'
+        numcomments:
+          $ref: '#/components/schemas/numberofcomments'
+        
+    banned:
+      title: banned
+      description: |-
+        list of all the banned users
+      type: array
+      items:
+        $ref: '#/components/schemas/user'
+    
+    followed:
+      title: followed
+      description: |-
+        list of all the followed users
+      type: array
+      items:
+        $ref: '#/components/schemas/user'
+        
+        
+    photos:
+      title: photo
+      description: |-
+        a photo
+      type: string
+      format: binary   
+      minLength: 0
+      maxLength: 2000000
+    
+    commentid:
+      title: commentid
+      type: integer
+      description: id of a comment
+    
+    photoid:
+      title: photoid
+      type: integer
+      description: id of a photo
+    
+    numberoflikes:
+      title: numberoflikes
+      type: integer
+      description: number of likes of a photo
+    
+    numberofcomments:
+      title: numberofcomments
+      type: integer
+      description: number of comments of a photo
+    
+    numberoffollowers:
+      title: numberoffollowers
+      type: integer
+      description: number of followers of a user
+    
+    numberoffollowed:
+      title: numberoffollowed
+      type: integer
+      description: number of followed of a user
+    
+  
+  
+  
 
+  
+ 
+    
+  
   parameters:
-    XAppVersion:
-      schema:
-        type: string
-        pattern: '^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$'
-        minLength: 1
-        maxLength: 10
-      name: X-App-Version
-      in: header
-      required: true
-      description: App human readable version ("semantic version" format)
-      allowEmptyValue: false
-    XAppBuild:
-      schema: { type: integer }
-      name: X-App-Build
-      in: header
-      required: true
-      description: App build number
-      allowEmptyValue: false
-    XAppLanguage:
-      schema:
-        type: string
-        pattern: '^[a-z]{2}([-_][A-Z]{2})?$'
-        minLength: 2
-        maxLength: 5
-      name: X-App-Language
-      in: header
-      required: true
-      description: App language in ISO 639-1 format
-      allowEmptyValue: false
-    XAppPlatform:
-      schema:
-        type: string
-        enum: [ios, android]
-      name: X-App-Platform
-      in: header
-      required: true
-      description: App operating system / platform
-      allowEmptyValue: false
-    cat:
-      schema:
-        type: string
-        pattern: '^[a-zA-Z]+$'
-        minLength: 3
-        maxLength: 10
-      name: cat
-      in: path
-      required: true
-      description: Cat
-      allowEmptyValue: false
+    singleusername:
+     description: single user
+     name: singleusername
+     in: path
+     required: true
+     schema:
+      $ref: "#/components/schemas/user"
+       
+       
+    singlephoto:
+     description: single photo
+     name: singlephoto
+     in: path
+     required: true
+     schema:
+      $ref: "#/components/schemas/photoid"
+    
+    singlecomment:
+     description: single comment
+     name: singlecomment
+     in: path
+     required: true
+     schema:
+      $ref: "#/components/schemas/commentid"
+    
+    singlelike:
+     description: single like
+     name: singlelike
+     in: path
+     required: true
+     schema:
+      $ref: "#/components/schemas/user"
+    
+    singlebanneduser:
+     description: single banned user
+     name: singlebanneduser
+     in: path
+     required: true
+     schema:
+      $ref: "#/components/schemas/user"
+    
+    singlefolloweduser:
+     description: single followed user
+     name: singlefolloweduser
+     in: path
+     required: true
+     schema:
+      $ref: "#/components/schemas/user"
+    
+  
+  
+  
+  
+paths:
+    /session:
+      post:
+        security:
+        - userAuthorization : []
+        tags: ["Login"]
+        summary: Log in
+        description: |-
+         if the user does not exist, it will be created,
+         and an identifier is returned.
+        operationId: doLogin
+        requestBody:
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"
+          required: true
+        responses:
+          '200':
+            description: User log-in action successful
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/user"
+          "400": { $ref: "#/components/responses/BadRequest" }
+          "500": { $ref: "#/components/responses/InternalServerError"}
+          "401": { $ref: "#/components/responses/Unauthorized"}
+          "403": { $ref: "#/components/responses/Forbidden" }
+                  
+                  
+    
+    /users/{singleusername}:
+      parameters:
+        - $ref: "#/components/parameters/singleusername"
+      post:
+        security:
+        - userAuthorization : []
+        tags: ["Users"]
+        summary: set username
+        description: set a new username
+        operationId: setMyUserName
+        requestBody:
+          description: User username
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"
+          required: true
+        responses:
+          "200":
+            description: Username set successfully.
+            content:
+              application/json:
+                schema: 
+                  $ref: "#/components/schemas/user"
+          "400": { $ref: "#/components/responses/BadRequest" }
+          "500": { $ref: "#/components/responses/InternalServerError"}
+          "401": { $ref: "#/components/responses/Unauthorized"}
+          "403": { $ref: "#/components/responses/Forbidden" }
+    /users/{singleusername}/photos/{singlephoto}:
+      parameters:
+        - $ref : "#/components/parameters/singleusername"
+        - $ref : "#/components/parameters/singlephoto"
+    #* uploadPhoto
+      put: 
+        security:
+        - userAuthorization : []
+        tags: ["Photos"]
+        summary: upload a new photo
+        operationId: uploadPhoto
+        description: |-
+          upload a new photo
+        requestBody:
+          description: a photo
+          content:
+            image/*:
+              schema:
+                $ref: "/components/schemas/photos"
+          required: true
+        responses:
+          "200":
+            description: Photo uploaded successfully
+            content:
+              image/*:
+                schema:
+                  $ref: "/components/schemas/photos"
+          "400": { $ref: "#/components/responses/BadRequest" }
+          "500": { $ref: "#/components/responses/InternalServerError" }
+          "401": { $ref: "#/components/responses/Unauthorized" }
+          "403": { $ref: "#/components/responses/Forbidden" }
+      delete:
+        security:
+        - userAuthorization : []
+        tags: ["Photos"]
+        summary: delete a photo
+        operationId: deletePhoto
+        description: |-
+          delete a photo
+        responses:
+          "204":
+            description: Photo deleted successfully
+          "400": { $ref: "#/components/responses/BadRequest" }
+          "500": { $ref: "#/components/responses/InternalServerError" }
+          "401": { $ref: "#/components/responses/Unauthorized" }
+          "403": { $ref: "#/components/responses/Forbidden" }
+          
+    
+    /users/{singleusername}/photos/{singlephoto}/likes/{singlelike}:
+      parameters:
+        - $ref : "#/components/parameters/singleusername"
+        - $ref : "#/components/parameters/singlephoto"
+        - $ref : "#/components/parameters/singlelike"
+      put:
+        security:
+        - userAuthorization : []
+        tags: ["Likes"]
+        operationId: likePhoto
+        summary: add a user to the list of likes of a picture
+        description: |-
+          add a user to the list of likes of a picture
+        responses:
+          "200":
+            description: |
+              like successfully added
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/likes'
+          "400": { $ref: "#/components/responses/BadRequest" }
+          "500": { $ref: "#/components/responses/InternalServerError" }
+          "401": { $ref: "#/components/responses/Unauthorized" }
+          "403": { $ref: "#/components/responses/Forbidden" }
+      delete:
+        security:
+        - userAuthorization : []
+        tags: ["Likes"]
+        operationId: unlikePhoto
+        summary: remove a user from the list of likes of a picture
+        description: |-
+          remove a user from the list of likes of a picture
+        responses:
+          "204":
+            description: |
+              like successfully removed
+            
+          "400": { $ref: "#/components/responses/BadRequest" }
+          "500": { $ref: "#/components/responses/InternalServerError" }
+          "401": { $ref: "#/components/responses/Unauthorized" }
+          "403": { $ref: "#/components/responses/Forbidden" }
+      
+      
+    
+    /users/{singleusername}/photos/{singlephoto}/comments/{singlecomment}:
+      parameters:
+        - $ref : "#/components/parameters/singleusername"
+        - $ref : "#/components/parameters/singlephoto"
+        - $ref : "#/components/parameters/singlecomment"
+      put:
+        security:
+        - userAuthorization : []
+        tags: ["Comments"]
+        summary: add a comment to a photo
+        operationId: commentPhoto
+        description: |-
+          add a comment to a photo
+        responses:
+          "200":
+            description: |
+              comment successfully added
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/comments'
+          "400": { $ref: "#/components/responses/BadRequest" }
+          "500": { $ref: "#/components/responses/InternalServerError" }
+          "401": { $ref: "#/components/responses/Unauthorized" }
+          "403": { $ref: "#/components/responses/Forbidden" }
+      delete:
+        security:
+        - userAuthorization : []
+        tags: ["Comments"]
+        summary: delete a comment to a photo
+        operationId: uncommentPhoto
+        description: |-
+          delete a comment from a photo
+        responses:
+          "204":
+            description: |
+              comment successfully deleted
+          "400": { $ref: "#/components/responses/BadRequest" }
+          "500": { $ref: "#/components/responses/InternalServerError" }
+          "401": { $ref: "#/components/responses/Unauthorized" }
+          "403": { $ref: "#/components/responses/Forbidden" }
+    
+    
+    
+    /users/{singleusername}/banned/{singlebanneduser}:
+      parameters:
+        - $ref : "#/components/parameters/singleusername"
+        - $ref : "#/components/parameters/singlephoto"
+        - $ref : "#/components/parameters/singlebanneduser"
+      put:
+        security:
+        - userAuthorization : []
+        tags: ["Ban"]
+        summary: add a user to the list of banned users
+        operationId: banUser
+        description: |-
+          add a user from the list of banned users
+        responses:
+          "200":
+            description: |
+              user successfully banned
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/banned'
+          "400": { $ref: "#/components/responses/BadRequest" }
+          "500": { $ref: "#/components/responses/InternalServerError" }
+          "401": { $ref: "#/components/responses/Unauthorized" }
+          "403": { $ref: "#/components/responses/Forbidden" }
+      delete:
+        security:
+        - userAuthorization : []
+        tags: ["Ban"]
+        summary: remove a user from the list of banned users
+        operationId: unbanUser
+        description: |-
+          remove a user from the list of banned users
+        responses:
+          "204":
+            description: |
+              user successfully unbanned
+          "400": { $ref: "#/components/responses/BadRequest" }
+          "500": { $ref: "#/components/responses/InternalServerError" }
+          "401": { $ref: "#/components/responses/Unauthorized" }
+          "403": { $ref: "#/components/responses/Forbidden" }
+    
+    
+    
+    /users/{singleusername}/followed/{singlefolloweduser}:
+      parameters:
+        - $ref : "#/components/parameters/singleusername"
+        - $ref : "#/components/parameters/singlephoto"
+        - $ref : "#/components/parameters/singlefolloweduser"
+      put:
+        security:
+        - userAuthorization : []
+        tags: ["Follow"]
+        summary: add a user to the list of followed users
+        operationId: followUser
+        description: |-
+          add a user from the list of followed users
+        responses:
+          "200":
+            description: |
+              user successfully followed
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/followed'
+          "400": { $ref: "#/components/responses/BadRequest" }
+          "500": { $ref: "#/components/responses/InternalServerError" }
+          "401": { $ref: "#/components/responses/Unauthorized" }
+          "403": { $ref: "#/components/responses/Forbidden" }
+      delete:
+        security:
+        - userAuthorization : []
+        tags: ["Follow"]
+        summary: remove a user from the list of followed users
+        operationId: unfollowUser
+        description: |-
+          remove a user from the list of followed users
+        responses:
+          "204":
+            description: |
+              user successfully unfollowed
+          "400": { $ref: "#/components/responses/BadRequest" }
+          "500": { $ref: "#/components/responses/InternalServerError" }
+          "401": { $ref: "#/components/responses/Unauthorized" }
+          "403": { $ref: "#/components/responses/Forbidden" }
+      
+    
+    
+    
+    
+    
+    
+    
+    /users/{singleusername}/profile:
+      parameters:
+        - $ref : "#/components/parameters/singleusername"
+      get: 
+        security:
+        - userAuthorization : []
+        tags: ["Users"]
+        summary: show the profile of a user
+        operationId: getUserProfile
+        responses:
+          "200":
+            description: |
+              profile retrived
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/profile'
+          "400": { $ref: "#/components/responses/BadRequest" }
+          "500": { $ref: "#/components/responses/InternalServerError" }
+          "401": { $ref: "#/components/responses/Unauthorized" }
+          "403": { $ref: "#/components/responses/Forbidden" }
+    
+    
+    
+    
+    
+    
+    
+    /users/{singleusername}/stream:
+      parameters:
+        - $ref : "#/components/parameters/singleusername"
+      get: 
+        security:
+        - userAuthorization : []
+        tags: ["Stream"]
+        summary: show the stream
+        operationId: getMyStream
+        description: |-
+          get the user's stream
+        
+        responses: 
+          "200":
+            description: |
+              stream retrived
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/stream'
+          "400": { $ref: "#/components/responses/BadRequest" }
+          "500": { $ref: "#/components/responses/InternalServerError" }
+          "401": { $ref: "#/components/responses/Unauthorized" }
+          "403": { $ref: "#/components/responses/Forbidden" }
+    
+
