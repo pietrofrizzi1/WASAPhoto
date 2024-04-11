@@ -166,7 +166,7 @@ components:
       type: string
       format: binary   
       minLength: 1
-      maxLength: 2000000
+      maxLength: 3000
     
     commentid:
       title: commentid
