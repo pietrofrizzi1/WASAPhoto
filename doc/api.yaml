@@ -39,18 +39,38 @@ components:
   responses:
     BadRequest: 
       description: The back-end responds with this error code whenever the error has its origin on client side and no other HTTP status code in the 400 range is suitable
+      content:
+        text/plain:
+          schema: { $ref: "#/components/schemas/Error" }
     Unauthorized: 
       description: The client did not provide any authentication details for a resource requiring authentication or the provided authentication details are not correct
+      content:
+        text/plain:
+          schema: { $ref: "#/components/schemas/Error" }
     Forbidden: 
       description: The client did provided correct authentication details, but the privileges/permissions of the provided credentials do not allow to request the resource
+      content:
+        text/plain:
+          schema: { $ref: "#/components/schemas/Error" }
     InternalServerError: 
       description: The error has its origin on server side
+      content:
+        text/plain:
+          schema: { $ref: "#/components/schemas/Error" }
   schemas:
+    Error:
+      description: error description
+      type: string
+      minLength: 0
+      maxLength: 500
+      readOnly: true
     likes:
       title: likes
       description: |-
         list of all the likes
       type: array
+      minItems: 0
+      maxItems: 20
       items:
         $ref: '#/components/schemas/user'
     comments:
@@ -64,6 +84,8 @@ components:
     commentssection:
       title: commentsection
       type: array
+      minItems: 0
+      maxItems: 20
       items:
         $ref: '#/components/schemas/comments'
           
@@ -94,6 +116,8 @@ components:
       description: |-
         stream structure
       type: array
+      minItems: 0
+      maxItems: 20
       items:
         $ref: '#/components/schemas/post'
         
@@ -119,6 +143,8 @@ components:
       description: |-
         list of all the banned users
       type: array
+      minItems: 0
+      maxItems: 20
       items:
         $ref: '#/components/schemas/user'
     
@@ -127,6 +153,8 @@ components:
       description: |-
         list of all the followed users
       type: array
+      minItems: 0
+      maxItems: 20
       items:
         $ref: '#/components/schemas/user'
         
@@ -137,7 +165,7 @@ components:
         a photo
       type: string
       format: binary   
-      minLength: 0
+      minLength: 1
       maxLength: 2000000
     
     commentid:
@@ -178,6 +206,8 @@ components:
  
     
   
+
+
   parameters:
     singleusername:
      description: single user
@@ -318,7 +348,7 @@ paths:
             content:
               image/*:
                 schema:
-                  $ref: "/components/schemas/photos"
+                  $ref: "#/components/schemas/photos"
           "400": { $ref: "#/components/responses/BadRequest" }
           "500": { $ref: "#/components/responses/InternalServerError" }
           "401": { $ref: "#/components/responses/Unauthorized" }
@@ -432,7 +462,7 @@ paths:
     /users/{singleusername}/banned/{singlebanneduser}:
       parameters:
         - $ref : "#/components/parameters/singleusername"
-        - $ref : "#/components/parameters/singlephoto"
+        
         - $ref : "#/components/parameters/singlebanneduser"
       put:
         security:
@@ -476,7 +506,6 @@ paths:
     /users/{singleusername}/followed/{singlefolloweduser}:
       parameters:
         - $ref : "#/components/parameters/singleusername"
-        - $ref : "#/components/parameters/singlephoto"
         - $ref : "#/components/parameters/singlefolloweduser"
       put:
         security:
