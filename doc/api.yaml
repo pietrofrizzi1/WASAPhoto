@@ -340,7 +340,7 @@ paths:
           content:
             image/*:
               schema:
-                $ref: "/components/schemas/photos"
+                $ref: "#/components/schemas/photos"
           required: true
         responses:
           "200":
