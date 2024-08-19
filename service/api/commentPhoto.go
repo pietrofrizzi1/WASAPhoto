@@ -1,50 +1,40 @@
 package api
 
+import (
+	"encoding/json"
+	"net/http"
+
+	"github.com/julienschmidt/httprouter"
+)
+
 type Comment struct {
-	Username string
-	Text string
-	
+	Username string `json:"username"`
+	Text     string `json:"text"`
 }
 
 var Comments = [][]Comment{
-  []Comment{
-	
-	Comment{
-		Username: "",
-		Text string,
-		
+	{
+		Comment{Username: "user1", Text: "First comment"},
+		Comment{Username: "user2", Text: "Second comment"},
+		Comment{Username: "user3", Text: "Third comment"},
 	},
-	Comment{
-		Username: "",
-		Text string,
-		
-	},
-	Comment{
-		Username: "",
-		Text string,
-		
-	},
-  },
-
 }
 
-import (
-"github.com/julienschmidt/httprouter"
-"net/http"
-"encoding/json"
-)
+func (rt *_router) CommentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	w.Header().Set("Content-Type", "application/json")
 
-func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-w.Header().Set("content-type", "application/json")
-nuovoCommento := r.URL.Query().Get("commento")
-nuovoCommento:= Comment{
-	Username:nuovoLike,
-	Text:"",
+	// Parse the comment from query parameters
+	commentText := r.URL.Query().Get("comment")
+
+	// Create a new Comment instance
+	newComment := Comment{
+		Username: "Anonymous", // Assuming no username is provided
+		Text:     commentText,
+	}
+
+	// Append the new comment to Comments
+	Comments[0] = append(Comments[0], newComment)
+
+	// Encode the newly created comment into JSON format and send it as the response
+	json.NewEncoder(w).Encode(newComment)
 }
-Comments= append(Comments,nuovoCommento)
-json.NewEncoder(w).Encode(nuovoCommento)
-
-
-
-}
-
