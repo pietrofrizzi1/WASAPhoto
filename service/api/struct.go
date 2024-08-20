@@ -1,7 +1,7 @@
 package api
 
 import (
-	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
+	"github.com/pietrofrizzi1/WASAPhoto/service/database"
 )
 
 type Profile struct {

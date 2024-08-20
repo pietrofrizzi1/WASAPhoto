@@ -12,7 +12,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/pietrofrizzi1/WASAPhoto/service/api/reqcontext"
+	
 	"github.com/julienschmidt/httprouter"
 )
 
