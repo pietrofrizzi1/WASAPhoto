@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/julienschmidt/httprouter"
 	"github.com/pietrofrizzi1/WASAPhoto/service/api/reqcontext"
 	"github.com/pietrofrizzi1/WASAPhoto/service/database"
-	"github.com/julienschmidt/httprouter"
 )
 
 func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {

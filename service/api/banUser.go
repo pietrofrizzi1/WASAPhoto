@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/pietrofrizzi1/WASAPhoto/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
+	"github.com/pietrofrizzi1/WASAPhoto/service/api/reqcontext"
 )
 
 func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
