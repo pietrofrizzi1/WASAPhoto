@@ -1,40 +1,82 @@
 package api
 
-import (
-	"encoding/json"
-	"net/http"
+/*
+go run ./cmd/webapi/
+curl -v \
+	-X PUT \
+	-H 'Authorization: topolino' \
+	localhost:3000/like/{2}
+*/
 
+import (
+	"net/http"
+	"strconv"
+
+	"github.com/pietrofrizzi1/WASAPhoto/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
 )
 
-type Comment struct {
-	Username string `json:"username"`
-	Text     string `json:"text"`
-}
+func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
-var Comments = [][]Comment{
-	{
-		Comment{Username: "user1", Text: "First comment"},
-		Comment{Username: "user2", Text: "Second comment"},
-		Comment{Username: "user3", Text: "Third comment"},
-	},
-}
-
-func (rt *_router) CommentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	w.Header().Set("Content-Type", "application/json")
-
-	// Parse the comment from query parameters
-	commentText := r.URL.Query().Get("comment")
-
-	// Create a new Comment instance
-	newComment := Comment{
-		Username: "Anonymous", // Assuming no username is provided
-		Text:     commentText,
+	userID := r.Header.Get("Authorization")
+	userLike, present, err := rt.db.GetUserID(userID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if !present {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
 	}
 
-	// Append the new comment to Comments
-	Comments[0] = append(Comments[0], newComment)
+	var pathID int64
+	pathID, err = strconv.ParseInt(ps.ByName("pid"), 10, 64)
 
-	// Encode the newly created comment into JSON format and send it as the response
-	json.NewEncoder(w).Encode(newComment)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	dbPhoto, present, err := rt.db.GetPhoto(pathID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if !present {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	Owner, present, err := rt.db.GetUserID(dbPhoto.Owner)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if !present {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	IsBanned1, err1 := rt.db.BannedUserCheck(userLike, Owner)
+	IsBanned2, err2 := rt.db.BannedUserCheck(Owner, userLike)
+
+	if err1 != nil || err2 != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if IsBanned1 || IsBanned2 {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	err = rt.db.LikePhoto(pathID, userLike.ID)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }
