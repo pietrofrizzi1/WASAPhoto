@@ -26,14 +26,6 @@ func (db *appdbimpl) RemoveComment(c Comment) error {
 	return nil
 }
 
-func (db *appdbimpl) RemoveComments(user uint64, banned uint64) error {
-	_, err := db.c.Exec(`DELETE FROM comments WHERE userId=? AND photoOwner=?`, banned, user)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 func (db *appdbimpl) GetComments(photoid uint64) ([]Comment, error) {
 	var ret []Comment
 	rows, err := db.c.Query(`SELECT Id, userId, photoId, photoOwner, content FROM comments WHERE photoId = ?`, photoid)
@@ -65,9 +57,9 @@ func (db *appdbimpl) GetComments(photoid uint64) ([]Comment, error) {
 	return ret, nil
 }
 
-func (db *appdbimpl) GetCommentById(c Comment) (Comment, error) {
+func (db *appdbimpl) GetCommentById(Id uint64) (Comment, error) {
 	var comment Comment
-	if err := db.c.QueryRow(`SELECT id, userId, photoId, photoOwner, content FROM comments WHERE id = ?`, c.Id).Scan(&comment.Id, &comment.UserId, &comment.PhotoId, &comment.PhotoOwner, &comment.Content); err != nil {
+	if err := db.c.QueryRow(`SELECT id, userId, photoId, photoOwner, content FROM comments WHERE id = ?`, Id).Scan(&comment.Id, &comment.UserId, &comment.PhotoId, &comment.PhotoOwner, &comment.Content); err != nil {
 		if err == sql.ErrNoRows {
 			return comment, ErrLikeDoesNotExist
 		}

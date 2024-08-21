@@ -12,30 +12,24 @@ import (
 
 func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var ban Ban
-	var user User
-	token := getToken(r.Header.Get("Authorization"))
 	id, err := strconv.ParseUint(ps.ByName("banid"), 10, 64)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	username := ps.ByName("username")
-	user.Username = username
-	dbuser, err := rt.db.GetUserId(username)
+
+	databan, err := rt.db.GetBanById(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	user.FromDatabase(dbuser)
-	ban.BanId = id
-	ban.UserId = token
-	ban.BannedId = user.Id
+	ban.BanFromDatabase(databan)
 	err = rt.db.RemoveBan(ban.BanToDatabase())
 	if errors.Is(err, database.ErrBanDoesNotExist) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	} else if err != nil {
-		ctx.Logger.WithError(err).WithField("id", id).Error("can't delete the photo")
+		ctx.Logger.WithError(err).WithField("id", id).Error("The ban can't be removed")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

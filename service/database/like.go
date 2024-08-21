@@ -45,9 +45,9 @@ func (db *appdbimpl) GetLike(photoid uint64, token uint64) (Like, error) {
 	return like, nil
 }
 
-func (db *appdbimpl) GetLikeById(l Like) (Like, error) {
+func (db *appdbimpl) GetLikeById(LikeId uint64) (Like, error) {
 	var like Like
-	if err := db.c.QueryRow(`SELECT Id, userId, photoId, photoOwner FROM likes WHERE id = ?`, l.LikeId).Scan(&like.LikeId, &like.UserIdentifier, &like.PhotoIdentifier, &like.PhotoOwner); err != nil {
+	if err := db.c.QueryRow(`SELECT Id, userId, photoId, photoOwner FROM likes WHERE id = ?`, LikeId).Scan(&like.LikeId, &like.UserIdentifier, &like.PhotoIdentifier, &like.PhotoOwner); err != nil {
 		if err == sql.ErrNoRows {
 			return like, ErrLikeDoesNotExist
 		}

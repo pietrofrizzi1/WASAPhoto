@@ -35,11 +35,6 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 	ban.BanFromDatabase(dbban)
 
-	err = rt.db.RemoveComments(token, user.Id)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	err = rt.db.RemoveLikes(token, user.Id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

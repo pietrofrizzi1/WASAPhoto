@@ -36,9 +36,9 @@ func (db *appdbimpl) GetBans(u User, token uint64) (Ban, error) {
 	return ban, nil
 }
 
-func (db *appdbimpl) GetBanById(b Ban) (Ban, error) {
+func (db *appdbimpl) GetBanById(BanId uint64) (Ban, error) {
 	var ban Ban
-	if err := db.c.QueryRow(`SELECT banId, bannedId, userId FROM bans WHERE banId = ?`, b.BanId).Scan(&ban.BanId, &ban.BannedId, &ban.UserId); err != nil {
+	if err := db.c.QueryRow(`SELECT banId, bannedId, userId FROM bans WHERE banId = ?`, BanId).Scan(&ban.BanId, &ban.BannedId, &ban.UserId); err != nil {
 		if err == sql.ErrNoRows {
 			return ban, ErrLikeDoesNotExist
 		}

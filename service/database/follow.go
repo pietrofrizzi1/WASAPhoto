@@ -12,8 +12,8 @@ func (db *appdbimpl) SetFollow(f Follow) (Follow, error) {
 	return f, nil
 }
 
-func (db *appdbimpl) RemoveFollow(FollowId uint64, UserId uint64, FollowedId uint64) error {
-	res, err := db.c.Exec(`DELETE FROM followers WHERE id=? AND followerId=? AND userId=? `, FollowId, FollowedId, UserId)
+func (db *appdbimpl) RemoveFollow(f Follow) error {
+	res, err := db.c.Exec(`DELETE FROM followers WHERE id=? AND followerId=? AND userId=? `, f.FollowId, f.FollowedId, f.UserId)
 	if err != nil {
 		return err
 	}
@@ -26,9 +26,9 @@ func (db *appdbimpl) RemoveFollow(FollowId uint64, UserId uint64, FollowedId uin
 	return err
 }
 
-func (db *appdbimpl) GetFollowingId(user1 uint64, user2 uint64) (Follow, error) {
+func (db *appdbimpl) GetFollowingId(Id uint64) (Follow, error) {
 	var follow Follow
-	if err := db.c.QueryRow(`SELECT Id, followerId, userId FROM followers WHERE followerId=? AND userId = ?`, user1, user2).Scan(&follow.FollowId, &follow.FollowedId, &follow.UserId); err != nil {
+	if err := db.c.QueryRow(`SELECT Id, followerId, userId FROM followers WHERE Id=?`, Id).Scan(&follow.FollowId, &follow.FollowedId, &follow.UserId); err != nil {
 		if err == sql.ErrNoRows {
 			return follow, ErrLikeDoesNotExist
 		}
