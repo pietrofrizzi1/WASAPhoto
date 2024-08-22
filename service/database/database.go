@@ -104,10 +104,10 @@ type Photo struct {
 }
 
 type Like struct {
-	LikeId          uint64 `json:"likeId"`
-	UserIdentifier  uint64 `json:"identifier"`
-	PhotoIdentifier uint64 `json:"photoIdentifier"`
-	PhotoOwner      uint64 `json:"photoOwner"`
+	Id         uint64 `json:"likeId"`
+	UserId     uint64 `json:"identifier"`
+	PhotoId    uint64 `json:"photoIdentifier"`
+	PhotoOwner uint64 `json:"photoOwner"`
 }
 
 type Comments struct {
@@ -131,7 +131,7 @@ type Comment struct {
 type AppDatabase interface {
 	CreateUser(User) (User, error)
 	SetUsername(User, string) (User, error)
-	GetUserId(string) (User, error)
+	GetUserId(string) (uint64, error)
 	CheckUserById(User) (User, error)
 	CheckUserByUsername(User) (User, error)
 	CheckUser(User) (User, error)
@@ -157,7 +157,7 @@ type AppDatabase interface {
 	RemovePhoto(uint64) error
 	GetPhotos(User, uint64) ([]Photo, error)
 	GetPhotosCount(uint64) (int, error)
-	CheckPhoto(Photo) (Photo, error)
+	CheckPhoto(uint64) (Photo, error)
 
 	SetLike(Like) (Like, error)
 	RemoveLike(Like) error

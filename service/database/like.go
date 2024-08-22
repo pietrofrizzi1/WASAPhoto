@@ -5,7 +5,7 @@ import (
 )
 
 func (db *appdbimpl) SetLike(l Like) (Like, error) {
-	_, err := db.c.Exec(`INSERT INTO likes (Id, userId, photoId, photoOwner) VALUES (?, ?, ?, ?)`, l.LikeId, l.UserIdentifier, l.PhotoIdentifier, l.PhotoOwner)
+	_, err := db.c.Exec(`INSERT INTO likes (Id, userId, photoId, photoOwner) VALUES (?, ?, ?, ?)`, l.Id, l.UserId, l.PhotoId, l.PhotoOwner)
 	if err != nil {
 		return l, err
 	}
@@ -13,7 +13,7 @@ func (db *appdbimpl) SetLike(l Like) (Like, error) {
 }
 
 func (db *appdbimpl) RemoveLike(l Like) error {
-	res, err := db.c.Exec(`DELETE FROM likes WHERE id=? AND userId=? AND photoId = ? AND photoOwner = ?`, l.LikeId, l.UserIdentifier, l.PhotoIdentifier, l.PhotoOwner)
+	res, err := db.c.Exec(`DELETE FROM likes WHERE id=? AND userId=? AND photoId = ? AND photoOwner = ?`, l.Id, l.UserId, l.PhotoId, l.PhotoOwner)
 	if err != nil {
 		return err
 	}
@@ -37,7 +37,7 @@ func (db *appdbimpl) RemoveLikes(user uint64, banned uint64) error {
 func (db *appdbimpl) GetLike(photoid uint64, token uint64) (Like, error) {
 	var like Like
 
-	if err := db.c.QueryRow(`SELECT Id, userId, photoId, photoOwner FROM likes WHERE userId = ? AND photoId = ?`, token, photoid).Scan(&like.LikeId, &like.UserIdentifier, &like.PhotoIdentifier, &like.PhotoOwner); err != nil {
+	if err := db.c.QueryRow(`SELECT Id, userId, photoId, photoOwner FROM likes WHERE userId = ? AND photoId = ?`, token, photoid).Scan(&like.Id, &like.UserId, &like.PhotoId, &like.PhotoOwner); err != nil {
 		if err == sql.ErrNoRows {
 			return like, ErrLikeDoesNotExist
 		}
@@ -47,7 +47,7 @@ func (db *appdbimpl) GetLike(photoid uint64, token uint64) (Like, error) {
 
 func (db *appdbimpl) GetLikeById(LikeId uint64) (Like, error) {
 	var like Like
-	if err := db.c.QueryRow(`SELECT Id, userId, photoId, photoOwner FROM likes WHERE id = ?`, LikeId).Scan(&like.LikeId, &like.UserIdentifier, &like.PhotoIdentifier, &like.PhotoOwner); err != nil {
+	if err := db.c.QueryRow(`SELECT Id, userId, photoId, photoOwner FROM likes WHERE id = ?`, LikeId).Scan(&like.Id, &like.UserId, &like.PhotoId, &like.PhotoOwner); err != nil {
 		if err == sql.ErrNoRows {
 			return like, ErrLikeDoesNotExist
 		}
