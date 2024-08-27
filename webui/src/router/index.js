@@ -9,9 +9,18 @@ const router = createRouter({
 	history: createWebHashHistory(import.meta.env.BASE_URL),
 	routes: [
 		
-		{path: '/session', component: SessionView},
+		
 		{path: '/:catchAll(.*)', component: ErrorView},
 		{path: '/', name: 'login',component: LoginView,},
+		{
+			path: '/session',
+			name: 'Session',
+			component: SessionView,
+		  },
+		  {
+			path: '/',
+			redirect: '/login', // Reindirizza la radice alla pagina di login
+		  },
         
 		
 	]

@@ -11,22 +11,21 @@ import (
 
 func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var ban Ban
-	var user User
+	
 	token := getToken(r.Header.Get("Authorization"))
 	username := ps.ByName("username")
-	dbuser, err := rt.db.GetUserId(username)
+	userid, err := rt.db.GetUserId(username)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	user.FromDatabase(dbuser)
 	id, err := strconv.ParseUint(ps.ByName("banid"), 10, 64)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	ban.BanId = id
-	ban.BannedId = user.Id
+	ban.BannedId = userid
 	ban.UserId = token
 	dbban, err := rt.db.CreateBan(ban.BanToDatabase())
 	if err != nil {
@@ -35,7 +34,7 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 	ban.BanFromDatabase(dbban)
 
-	err = rt.db.RemoveLikes(token, user.Id)
+	err = rt.db.RemoveLikes(token, userid)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

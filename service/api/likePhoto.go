@@ -28,17 +28,17 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 	}
 	token := getToken(r.Header.Get("Authorization"))
 
-	Like.Id = likeid
-	Like.PhotoId = photoid
-	Like.PhotoOwner = token
-	Like.UserId = userid
+	like.Id = likeid
+	like.PhotoId = photoid
+	like.PhotoOwner = token
+	like.UserId = userid
 
-	mipiaze, err := rt.db.SetLike(Like.LikeToDatabase())
+	mipiaze, err := rt.db.SetLike(like.LikeToDatabase())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	Like.LikeFromDatabase(mipiaze)
+	like.LikeFromDatabase(mipiaze)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusNoContent)
 }

@@ -131,8 +131,8 @@ type Comment struct {
 type AppDatabase interface {
 	CreateUser(User) (User, error)
 	SetUsername(User, string) (User, error)
-	GetUserId(string) (uint64, error)
 	CheckUserById(User) (User, error)
+	GetUserId(string) (uint64, error)
 	CheckUserByUsername(User) (User, error)
 	CheckUser(User) (User, error)
 	GetMyStream(User) ([]PhotoStream, error)
