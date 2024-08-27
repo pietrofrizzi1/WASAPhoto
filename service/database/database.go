@@ -157,7 +157,6 @@ type AppDatabase interface {
 	RemovePhoto(uint64) error
 	GetPhotos(User, uint64) ([]Photo, error)
 	GetPhotosCount(uint64) (int, error)
-	CheckPhoto(uint64) (Photo, error)
 
 	SetLike(Like) (Like, error)
 	RemoveLike(Like) error

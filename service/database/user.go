@@ -37,9 +37,9 @@ func (db *appdbimpl) SetUsername(u User, username string) (User, error) {
 	return u, nil
 }
 
-func (db *appdbimpl) GetUserId(username string) (User, error) {
-	var user User
-	if err := db.c.QueryRow(`SELECT id, username FROM users WHERE username = ?`, username).Scan(&user.Id, &user.Username); err != nil {
+func (db *appdbimpl) GetUserId(username string) (uint64, error) {
+	var user uint64
+	if err := db.c.QueryRow(`SELECT id FROM users WHERE username = ?`, username).Scan(&user); err != nil {
 		if err == sql.ErrNoRows {
 			return user, ErrUserDoesNotExist
 		}
