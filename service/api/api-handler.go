@@ -7,13 +7,13 @@ import (
 // Handler returns an instance of httprouter.Router that handle APIs registered here
 func (rt *_router) Handler() http.Handler {
 	// Register routes
-	rt.router.POST("/session", rt.wrap(rt.doLogin))
+	rt.router.POST("/api/session", rt.wrap(rt.doLogin))
 
 	rt.router.POST("/user/:singleusername", rt.wrap(rt.setMyUserName))
 
 	rt.router.POST("/user/:singleusername/photos/:singlephoto", rt.wrap(rt.uploadPhoto))
 
-	rt.router.POST("/user/:singleusername/photos/:singlephoto", rt.wrap(rt.deletePhoto))
+	rt.router.DELETE("/user/:singleusername/photos/:singlephoto", rt.wrap(rt.deletePhoto))
 
 	rt.router.PUT("/user/:singleusername/photos/:singlephoto/likes/:singlelike", rt.wrap(rt.likePhoto))
 
