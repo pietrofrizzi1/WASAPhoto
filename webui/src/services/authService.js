@@ -4,9 +4,16 @@ import axios from 'axios';
 const API_URL = 'http://localhost:3000/session'; // Assicurati che questo sia il percorso corretto
 
 export async function doLogin(username) {
+  console.log("ciao");
   try {
-    const response = await axios.post(API_URL, { username });
+    console.log("!")
+    const response = await axios.post(API_URL,{ username }, // Corpo della richiesta
+      { headers: { 'Authorization': `Bearer ${sessionStorage.getItem('token')}` } } // Headers della richiesta
+    );
+    console.log(response.data)
+    console.log("!")
     return response.data;
+    
   } catch (error) {
     // Gestione dettagliata degli errori
     let errorMessage = 'Errore di login: ';

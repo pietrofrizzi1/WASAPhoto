@@ -1,13 +1,15 @@
 package api
 
 import (
+	"log"
 	"net/http"
 )
 
 // Handler returns an instance of httprouter.Router that handle APIs registered here
 func (rt *_router) Handler() http.Handler {
 	// Register routes
-	rt.router.POST("/api/session", rt.wrap(rt.doLogin))
+	log.Print("ciao")
+	rt.router.POST("/session/", rt.wrap(rt.doLogin))
 
 	rt.router.POST("/user/:singleusername", rt.wrap(rt.setMyUserName))
 

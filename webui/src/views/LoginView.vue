@@ -28,7 +28,9 @@ const handleLogin = async () => {
   errorMessage.value = '';
   successMessage.value = '';
   try {
+    
     const response = await doLogin(username.value); // Chiama la funzione doLogin
+    
     console.log('Login/Registration successful:', response);
     successMessage.value = 'Login successful!';
     router.push('/session'); // Redirect to another page if needed

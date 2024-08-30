@@ -1,24 +1,26 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gorilla/handlers"
 )
 
-// applyCORSHandler applies a CORS policy to the router. CORS stands for Cross-Origin Resource Sharing: it's a security
-// feature present in web browsers that blocks JavaScript requests going across different domains if not specified in a
-// policy. This function sends the policy of this API server.
 func applyCORSHandler(h http.Handler) http.Handler {
+	log.Print("1")
+	http.HandleFunc("/test", testHandler)
+
+	log.Print("Server listening on port 3000")
+	http.ListenAndServe(":3000", nil)
 	return handlers.CORS(
-		handlers.AllowedHeaders([]string{
-			"x-example-header",
-		}),
+
+		handlers.AllowedHeaders([]string{"Content-Type", "Authorization", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "X-Requested-With"}),
 		handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS", "DELETE", "PUT"}),
-		// Do not modify the CORS origin and max age, they are used in the evaluation.
-		handlers.AllowedOrigins([]string{"*"}),
-		handlers.AllowedOrigins([]string{"http://localhost:3000"}), // Consenti l'origine del server Vue
-		handlers.AllowCredentials(),
+		handlers.AllowedOrigins([]string{"*"}), // Permetti tutte le origini, personalizza se necessario
 		handlers.MaxAge(1),
 	)(h)
+}
+func testHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Server is up and running"))
 }
