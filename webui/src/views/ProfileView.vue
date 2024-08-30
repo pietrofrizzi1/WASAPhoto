@@ -281,107 +281,226 @@ export default {
 </script>
 
 <template>
-    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-        <div class="position-sticky pt-3 sidebar-sticky">
-            <h6
-                class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
-                <span>General</span>
-            </h6>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <RouterLink to="/session" class="nav-link">
-                        <svg class="feather">
-                            <use href="/feather-sprite-v4.29.0.svg#home" />
-                        </svg>
-                        Home
-                    </RouterLink>
-                </li>
-            </ul>
-        </div>
-    </nav>
-    <div
-        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Welcome to your profile {{ profile.username }} </h1>
-        <div class="p-4 text-black">
-            <div class="d-flex justify-content-end text-center py-1">
-                <div>
-                    <p class="mb-1 h5">{{ profile.followersCount }}</p>
-                    <p class="small text-muted mb-0">Followers</p>
-                </div>
-                <div class="px-3">
-                    <p class="mb-1 h5">{{ profile.followingCount }}</p>
-                    <p class="small text-muted mb-0">Followings</p>
-                </div>
-                <div>
-                    <p class="mb-1 h5">{{ profile.photoCount }}</p>
-                    <p class="small text-muted mb-0">Photos</p>
-                </div>
+    <div class="profile-container">
+        <!-- Sidebar -->
+        <nav id="sidebarMenu" class="sidebar bg-light">
+            <div class="position-sticky pt-3 sidebar-sticky">
+                <h6 class="sidebar-heading text-muted text-uppercase">General</h6>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <RouterLink to="/session" class="nav-link">
+                            <svg class="feather">
+                                <use href="/feather-sprite-v4.29.0.svg#home" />
+                            </svg>
+                            Home
+                        </RouterLink>
+                    </li>
+                </ul>
             </div>
-        </div>
-    </div>
-    <div class="input-group mb-3">
-        <input type="text" id="newUsername" v-model="newUsername" class="form-control"
-            placeholder="Insert a new username for your profile..." aria-label="Recipient's username"
-            aria-describedby="basic-addon2">
-        <div class="input-group-append">
-            <button class="btn btn-success" type="button" @click="changeName">Change username</button>
-        </div>
-    </div>
+        </nav>
 
-    <div
-        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    </div>
-
-    <ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
-
-    <LogModal id="logviewer" :log="photoComments" :token="token"></LogModal>
-
-    <div class="row">
-        <div class="col-md-4" v-for="photo in photoList.photos" :key="photo.id">
-            <div class="card mb-4 shadow-sm">
-                <img class="card-img-top" :src=photo.file alt="Card image cap">
-                <div class="card-body">
-                    <RouterLink :to="'/users/' + profile.username + '/profile'" class="nav-link">
-                        <button type="button" class="btn btn-outline-primary">{{ profile.username }}</button>
-                    </RouterLink>
-                    <div
-                        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <!-- Main content -->
+        <div class="main-content">
+            <header class="profile-header">
+                <h1>Welcome to your profile, {{ profile.username }}</h1>
+                <div class="profile-stats">
+                    <div>
+                        <p class="stat-value">{{ profile.followersCount }}</p>
+                        <p class="stat-label">Followers</p>
                     </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <p class="card-text">Likes : {{ photo.likesCount }}</p>
+                    <div>
+                        <p class="stat-value">{{ profile.followingCount }}</p>
+                        <p class="stat-label">Followings</p>
                     </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <p class="card-text">Comments : {{ photo.commentsCount }}</p>
+                    <div>
+                        <p class="stat-value">{{ profile.photoCount }}</p>
+                        <p class="stat-label">Photos</p>
                     </div>
-                    <p class="card-text">Photo uploaded on {{ photo.date }}</p>
+                </div>
+            </header>
 
-                    <div class="input-group mb-3">
-                        <input type="text" id="comment" v-model="photo.comment" class="form-control" placeholder="Comment!"
-                          aria-describedby="basic-addon2">
-                        <div class="input-group-append">
-                            <button class="btn btn-primary" type="button"
-                                @click="sendComment(username, photo.id, photo.comment)">Send</button>
+            <!-- Change Username -->
+            <div class="username-change">
+                <input type="text" id="newUsername" v-model="newUsername" class="form-control" placeholder="Insert a new username for your profile...">
+                <button class="btn btn-success" @click="changeName">Change username</button>
+            </div>
+
+            <!-- Error Message -->
+            <ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
+
+            <!-- Photo Grid -->
+            <div class="photo-grid">
+                <div class="photo-card" v-for="photo in photoList.photos" :key="photo.id">
+                    <img class="photo-image" :src="photo.file" alt="Photo">
+                    <div class="photo-info">
+                        <RouterLink :to="'/users/' + profile.username + '/profile'" class="username-link">
+                            <button class="btn btn-outline-primary">{{ profile.username }}</button>
+                        </RouterLink>
+                        <p class="photo-date">Photo uploaded on {{ photo.date }}</p>
+                        <p class="photo-likes">Likes: {{ photo.likesCount }}</p>
+                        <p class="photo-comments">Comments: {{ photo.commentsCount }}</p>
+                        
+                        <div class="comment-section">
+                            <input type="text" id="comment" v-model="photo.comment" class="form-control" placeholder="Comment!">
+                            <button class="btn btn-primary" @click="sendComment(username, photo.id, photo.comment)">Send</button>
                         </div>
-                    </div>
 
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-dark" @click="openLog(username, photo.id)">Comments</button>
-                            <button type="button" v-if="photo.likeStatus == false" class="btn btn-primary"
-                                @click="likePhoto(username, photo.id)">Like</button>
-                            <button type="button" v-if="photo.likeStatus == true" class="btn btn-danger"
-                                @click="deleteLike(username, photo.id)">Unlike</button>
-                            <button type="button" class="btn btn-sm btn btn-outline-danger"
-                                @click="deletePhoto(photo.id)">Delete </button>
+                        <div class="photo-actions">
+                            <button class="btn btn-dark" @click="openLog(username, photo.id)">Comments</button>
+                            <button v-if="photo.likeStatus === false" class="btn btn-primary" @click="likePhoto(username, photo.id)">Like</button>
+                            <button v-if="photo.likeStatus === true" class="btn btn-danger" @click="deleteLike(username, photo.id)">Unlike</button>
+                            <button class="btn btn-outline-danger" @click="deletePhoto(photo.id)">Delete</button>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Log Modal -->
+            <LogModal id="logviewer" :log="photoComments" :token="token"></LogModal>
         </div>
     </div>
-
-
 </template>
 
+
 <style>
+</style>
+<style scoped>
+.profile-container {
+    display: flex;
+}
+
+.sidebar {
+    flex: 1;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-right: 1px solid #dee2e6;
+}
+
+.sidebar-heading {
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 1rem;
+}
+
+.nav-link {
+    color: #007bff;
+    transition: color 0.2s;
+}
+
+.nav-link:hover {
+    color: #0056b3;
+}
+
+.main-content {
+    flex: 3;
+    padding: 20px;
+}
+
+.profile-header {
+    margin-bottom: 2rem;
+}
+
+.profile-header h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.profile-stats {
+    display: flex;
+    justify-content: space-around;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.username-change {
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+}
+
+.form-control {
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+    margin-right: 10px;
+}
+
+.btn-success {
+    border-radius: 5px;
+}
+
+.error-message {
+    color: #dc3545;
+    margin-bottom: 1rem;
+}
+
+.photo-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.photo-card {
+    width: calc(33.333% - 1rem);
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    overflow: hidden;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.photo-image {
+    width: 100%;
+    height: auto;
+}
+
+.photo-info {
+    padding: 1rem;
+}
+
+.username-link {
+    margin-bottom: 1rem;
+}
+
+.photo-date, .photo-likes, .photo-comments {
+    font-size: 14px;
+    margin-bottom: 0.5rem;
+}
+
+.comment-section {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.photo-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.btn-dark {
+    border-radius: 5px;
+}
+
+.btn-primary {
+    border-radius: 5px;
+}
+
+.btn-danger {
+    border-radius: 5px;
+}
+
+.btn-outline-danger {
+    border-radius: 5px;
+    border-color: #dc3545;
+    color: #dc3545;
+}
 </style>

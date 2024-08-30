@@ -35,32 +35,85 @@ export default {
                     }
                 }
             }
-
         }
     },
     mounted() {
-
     }
-
 }
 </script>
 
 <template>
-    <div
-        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Welcome to WASAPhoto</h1>
-    </div>
-    <div class="input-group mb-3">
-        <input type="text" id="username" v-model="username" class="form-control"
-            placeholder="Insert a username to log in WASAPhoto." aria-label="Recipient's username"
-            aria-describedby="basic-addon2">
-        <div class="input-group-append">
-            <button class="btn btn-success" type="button" @click="doLogin">Login</button>
+    <div class="login-container">
+        <div class="header">
+            <h1>Welcome to WASAPhoto</h1>
         </div>
+        <div class="login-form">
+            <input type="text" id="username" v-model="username" class="form-control" placeholder="Insert a username to log in WASAPhoto.">
+            <button class="btn btn-success login-button" type="button" @click="doLogin">Login</button>
+        </div>
+        <ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
     </div>
-    <ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
 </template>
 
-<style>
+<style scoped>
+.login-container {
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
 
+.header {
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-control {
+    margin-bottom: 20px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: border-color 0.2s;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.login-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #28a745;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.login-button:hover {
+    background-color: #218838;
+}
+
+.login-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.25);
+}
 </style>
