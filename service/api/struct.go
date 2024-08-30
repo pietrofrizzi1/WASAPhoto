@@ -133,26 +133,26 @@ func (p *Photo) PhotoToDatabase() database.Photo {
 }
 
 type Like struct {
-	Id         uint64 `json:"likeId"`
-	UserId     uint64 `json:"identifier"`
-	PhotoId    uint64 `json:"photoIdentifier"`
-	PhotoOwner uint64 `json:"photoOwner"`
+	LikeId          uint64 `json:"likeId"`
+	UserIdentifier  uint64 `json:"identifier"`
+	PhotoIdentifier uint64 `json:"photoIdentifier"`
+	PhotoOwner      uint64 `json:"photoOwner"`
 }
 
 func (l *Like) LikeFromDatabase(like database.Like) {
-	l.Id = like.Id
-	l.UserId = like.UserId
-	l.PhotoId = like.PhotoId
+	l.LikeId = like.LikeId
+	l.UserIdentifier = like.UserIdentifier
+	l.PhotoIdentifier = like.PhotoIdentifier
 	l.PhotoOwner = like.PhotoOwner
 
 }
 
 func (l *Like) LikeToDatabase() database.Like {
 	return database.Like{
-		Id:         l.Id,
-		UserId:     l.UserId,
-		PhotoId:    l.PhotoId,
-		PhotoOwner: l.PhotoOwner,
+		LikeId:          l.LikeId,
+		UserIdentifier:  l.UserIdentifier,
+		PhotoIdentifier: l.PhotoIdentifier,
+		PhotoOwner:      l.PhotoOwner,
 	}
 }
 

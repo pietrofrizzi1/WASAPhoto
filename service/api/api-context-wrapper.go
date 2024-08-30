@@ -3,9 +3,9 @@ package api
 import (
 	"net/http"
 
-	"github.com/pietrofrizzi1/WASAPhoto/service/api/reqcontext"
 	"github.com/gofrs/uuid"
 	"github.com/julienschmidt/httprouter"
+	"github.com/pietrofrizzi1/WASAPhoto/service/api/reqcontext"
 	"github.com/sirupsen/logrus"
 )
 

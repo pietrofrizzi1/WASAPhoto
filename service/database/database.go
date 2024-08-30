@@ -1,33 +1,3 @@
-/*
-Package database is the middleware between the app database and the code. All data (de)serialization (save/load) from a
-persistent database are handled here. Database specific logic should never escape this package.
-
-To use this package you need to apply migrations to the database if needed/wanted, connect to it (using the database
-data source name from config), and then initialize an instance of AppDatabase from the DB connection.
-
-For example, this code adds a parameter in `webapi` executable for the database data source name (add it to the
-main.WebAPIConfiguration structure):
-
-	DB struct {
-		Filename string `conf:""`
-	}
-
-This is an example on how to migrate the DB and connect to it:
-
-	// Start Database
-	logger.Println("initializing database support")
-	db, err := sql.Open("sqlite3", "./foo.db")
-	if err != nil {
-		logger.WithError(err).Error("error opening SQLite DB")
-		return fmt.Errorf("opening SQLite: %w", err)
-	}
-	defer func() {
-		logger.Debug("database stopping")
-		_ = db.Close()
-	}()
-
-Then you can initialize the AppDatabase and pass it to the api package.
-*/
 package database
 
 import (
@@ -104,10 +74,10 @@ type Photo struct {
 }
 
 type Like struct {
-	Id         uint64 `json:"likeId"`
-	UserId     uint64 `json:"identifier"`
-	PhotoId    uint64 `json:"photoIdentifier"`
-	PhotoOwner uint64 `json:"photoOwner"`
+	LikeId          uint64 `json:"likeId"`
+	UserIdentifier  uint64 `json:"identifier"`
+	PhotoIdentifier uint64 `json:"photoIdentifier"`
+	PhotoOwner      uint64 `json:"photoOwner"`
 }
 
 type Comments struct {
@@ -131,15 +101,15 @@ type Comment struct {
 type AppDatabase interface {
 	CreateUser(User) (User, error)
 	SetUsername(User, string) (User, error)
+	GetUserId(string) (User, error)
 	CheckUserById(User) (User, error)
-	GetUserId(string) (uint64, error)
 	CheckUserByUsername(User) (User, error)
 	CheckUser(User) (User, error)
 	GetMyStream(User) ([]PhotoStream, error)
 
 	SetFollow(Follow) (Follow, error)
-	RemoveFollow(Follow) error
-	GetFollowingId(uint64) (Follow, error)
+	RemoveFollow(uint64, uint64, uint64) error
+	GetFollowingId(user1 uint64, user2 uint64) (Follow, error)
 	GetFollowers(User, uint64) (Follow, error)
 	GetFollowersCount(uint64) (int, error)
 	GetFollowingsCount(uint64) (int, error)
@@ -148,7 +118,7 @@ type AppDatabase interface {
 	CreateBan(Ban) (Ban, error)
 	RemoveBan(Ban) error
 	GetBans(User, uint64) (Ban, error)
-	GetBanById(uint64) (Ban, error)
+	GetBanById(Ban) (Ban, error)
 	UpdateBanStatus(int, uint64, uint64) error
 	GetBanStatus(uint64, uint64) (bool, error)
 	CheckIfBanned(uint64, uint64) (bool, error)
@@ -157,18 +127,20 @@ type AppDatabase interface {
 	RemovePhoto(uint64) error
 	GetPhotos(User, uint64) ([]Photo, error)
 	GetPhotosCount(uint64) (int, error)
+	CheckPhoto(Photo) (Photo, error)
 
 	SetLike(Like) (Like, error)
 	RemoveLike(Like) error
 	RemoveLikes(uint64, uint64) error
 	GetLike(uint64, uint64) (Like, error)
-	GetLikeById(uint64) (Like, error)
+	GetLikeById(Like) (Like, error)
 	GetLikesCount(photoid uint64) (int, error)
 
 	SetComment(Comment) (Comment, error)
 	RemoveComment(Comment) error
+	RemoveComments(uint64, uint64) error
 	GetComments(photoid uint64) ([]Comment, error)
-	GetCommentById(uint64) (Comment, error)
+	GetCommentById(Comment) (Comment, error)
 	GetCommentsCount(uint64) (int, error)
 
 	Ping() error
