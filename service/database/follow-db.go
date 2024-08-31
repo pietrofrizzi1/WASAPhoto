@@ -12,8 +12,8 @@ func (db *appdbimpl) SetFollow(f Follow) (Follow, error) {
 	return f, nil
 }
 
-func (db *appdbimpl) RemoveFollow(FollowId uint64, UserId uint64, FollowedId uint64) error {
-	res, err := db.c.Exec(`DELETE FROM followers WHERE id=? AND followerId=? AND userId=? `, FollowId, FollowedId, UserId)
+func (db *appdbimpl) RemoveFollow(UserId uint64, FollowedId uint64) error {
+	res, err := db.c.Exec(`DELETE FROM followers WHERE followerId=? AND userId=? `, FollowedId, UserId)
 	if err != nil {
 		return err
 	}
@@ -21,9 +21,9 @@ func (db *appdbimpl) RemoveFollow(FollowId uint64, UserId uint64, FollowedId uin
 	if err != nil {
 		return err
 	} else if affected == 0 {
-		return ErrFollowDoesNotExist
+		return nil
 	}
-	return err
+	return nil
 }
 
 func (db *appdbimpl) GetFollowingId(user1 uint64, user2 uint64) (Follow, error) {

@@ -108,7 +108,7 @@ type AppDatabase interface {
 	GetMyStream(User) ([]PhotoStream, error)
 
 	SetFollow(Follow) (Follow, error)
-	RemoveFollow(uint64, uint64, uint64) error
+	RemoveFollow(uint64, uint64) error
 	GetFollowingId(user1 uint64, user2 uint64) (Follow, error)
 	GetFollowers(User, uint64) (Follow, error)
 	GetFollowersCount(uint64) (int, error)
