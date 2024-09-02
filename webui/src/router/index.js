@@ -4,6 +4,7 @@ import LoginView from '../views/LoginView.vue'
 import ProfileView from '../views/ProfileView.vue'
 import UserView from '../views/UserView.vue'
 import ErorrView from '../views/404view.vue'
+import SearchView from '../views/SearchView.vue';
 
 const router = createRouter({
 	history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -11,6 +12,7 @@ const router = createRouter({
 		{path: '/', component: LoginView},
 		{path: '/session', component: HomeView},
 		{path: '/users/:username/profile', component: ProfileView},
+		{path: '/session/search', component: SearchView},
 		{path: '/users/:username/view', component: UserView},
 		{path: '/:catchAll(.*)', component: ErorrView}
 	]

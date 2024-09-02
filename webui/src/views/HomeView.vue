@@ -284,34 +284,38 @@ export default {
 <template>
 	<div class="container">
 	  <!-- Sidebar -->
+	  
+	
 	  <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
 		<div class="position-sticky pt-3 sidebar-sticky">
-		  <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
-			<span>General</span>
-		  </h6>
 		  <ul class="nav flex-column">
 			<li class="nav-item">
-			  <RouterLink to="/session" class="nav-link">
-				<svg class="feather">
-				  <use href="/feather-sprite-v4.29.0.svg#home" />
-				</svg>
-				Home
-			  </RouterLink>
-			</li>
-		  </ul>
-		</div>
-	  </nav>
-  
+            <div class="nav-link" @click="ViewProfile">
+              <svg class="feather">
+                <use href="/feather-sprite-v4.29.0.svg#user" />
+              </svg>
+              Profile
+            </div>
+          </li>
+          <li class="nav-item">
+            <div class="nav-link" @click="doLogout">
+              <svg class="feather">
+                <use href="/feather-sprite-v4.29.0.svg#log-out" />
+              </svg>
+              Logout
+            </div>
+          </li>
+        </ul>
+      </div>
+    </nav>
 	  <!-- Main Content -->
 	  <div class="col-md-9 ms-sm-auto col-lg-10 px-4">
 		<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-		  <h1 class="h2">Welcome back, {{username}}</h1>
+		  <h1 class="h2">{{ username }}'s stream</h1>
 		  <div class="btn-toolbar mb-2 mb-md-0">
 			<div class="btn-group me-2">
 			  <button class="btn btn-danger" type="button" @click="doLogout">Logout</button>
 			  <button class="btn btn-primary" type="button" @click="ViewProfile">Profile</button>
-			  <input type="file" accept="image/*" class="btn btn-outline-primary" @change="uploadFile" ref="file">
-			  <button class="btn btn-success" @click="submitFile">Upload</button>
 			</div>
 		  </div>
 		</div>
@@ -333,11 +337,11 @@ export default {
 			  <img class="card-img-top" :src="photo.file" alt="Photo" />
 			  <div class="card-body">
 				<RouterLink :to="'/users/' + photo.username + '/view'" class="nav-link">
-				  <button type="button" class="btn btn-outline-primary">{{photo.username}}</button>
+				  <button type="button" class="btn btn-outline-primary">{{ photo.username }}</button>
 				</RouterLink>
-				<p class="card-text">Likes: {{photo.likeCount}}</p>
-				<p class="card-text">Comments: {{photo.commentCount}}</p>
-				<p class="card-text">Uploaded on: {{photo.date}}</p>
+				<p class="card-text">Likes: {{ photo.likeCount }}</p>
+				<p class="card-text">Comments: {{ photo.commentCount }}</p>
+				<p class="card-text">Uploaded on: {{ photo.date }}</p>
   
 				<!-- Comment Input -->
 				<div class="input-group mb-3">
@@ -349,8 +353,8 @@ export default {
 				<div class="d-flex justify-content-between align-items-center">
 				  <div class="btn-group">
 					<button type="button" class="btn btn-dark" @click="openLog(photo.username, photo.id)">Comments</button>
-					<button type="button" v-if="photo.likeStatus==false" class="btn btn-primary" @click="likePhoto(photo.username, photo.id)">Like</button>
-					<button type="button" v-if="photo.likeStatus==true" class="btn btn-danger" @click="deleteLike(photo.username, photo.id)">Unlike</button>
+					<button type="button" v-if="photo.likeStatus == false" class="btn btn-primary" @click="likePhoto(photo.username, photo.id)">Like</button>
+					<button type="button" v-if="photo.likeStatus == true" class="btn btn-danger" @click="deleteLike(photo.username, photo.id)">Unlike</button>
 				  </div>
 				</div>
 			  </div>
@@ -362,57 +366,72 @@ export default {
 	  <!-- Modal -->
 	  <LogModal id="logviewer" :log="photoComments" :token="token"></LogModal>
 	</div>
-  </template>
-  
-  <style scoped>
-  /* Container adjustments */
-  .container {
+</template>
+
+<style scoped>
+/* Container adjustments */
+.container {
 	margin-top: 20px;
-  }
-  
-  /* Card and image styling */
-  .card {
+}
+
+/* Card and image styling */
+.card {
 	border-radius: 10px;
 	overflow: hidden;
-  }
-  .card-img-top {
+}
+.card-img-top {
 	object-fit: cover;
 	height: 200px;
-  }
-  
-  /* Input and button styling */
-  .input-group input {
+}
+
+/* Input and button styling */
+.input-group input {
 	border-radius: 5px 0 0 5px;
-  }
-  .input-group button {
+}
+.input-group button {
 	border-radius: 0 5px 5px 0;
-  }
-  
-  /* Button adjustments */
-  .btn-group .btn {
+}
+
+/* Button adjustments */
+.btn-group .btn {
 	margin-right: 5px;
-  }
-  
-  /* Error and success messages */
-  .ErrorMsg, .SuccessMsg {
+}
+
+/* Error and success messages */
+.ErrorMsg, .SuccessMsg {
 	border: 1px solid transparent;
 	border-radius: 5px;
 	padding: 10px;
-  }
-  .ErrorMsg {
+}
+.ErrorMsg {
 	background-color: #f8d7da;
 	color: #721c24;
-  }
-  .SuccessMsg {
+}
+.SuccessMsg {
 	background-color: #d4edda;
 	color: #155724;
-  }
-  
-  /* Responsive adjustments */
-  @media (max-width: 767px) {
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
 	.col-md-9 {
 	  padding: 0;
 	}
-  }
-  </style>
-  
+}
+
+/* Sidebar adjustments */
+.sidebar .nav-link {
+	display: flex;
+	align-items: center;
+	padding: 10px 15px;
+	border-radius: 5px;
+}
+.sidebar .nav-link svg {
+	width: 20px;
+	height: 20px;
+	margin-right: 10px;
+}
+.sidebar .nav-link:hover {
+	background-color: #e9ecef;
+}
+</style>

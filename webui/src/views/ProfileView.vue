@@ -62,6 +62,36 @@ export default {
             await this.userProfile();
             await this.userPhotos();
         },
+		async uploadFile() {
+			this.images = this.$refs.file.files[0]
+		},
+		async submitFile() {
+			if (this.images === null) {
+				this.errormsg = "Please select a file to upload."
+			} else {
+				try {
+					let response = await this.$axios.put("/users/" + this.username + "/photo/" + Math.floor(Math.random() * 10000), this.images, {
+						headers: {
+							Authorization: "Bearer " + localStorage.getItem("token")
+						}
+					})
+					this.profile = response.data
+                    this.refresh()
+					this.successmsg = "Photo uploaded successfully."
+				} catch (e) {
+					if (e.response && e.response.status === 400) {
+						this.errormsg = "Form error, please check all fields and try again. If you think that this is an error, write an e-mail to us.";
+						this.detailedmsg = null;
+					} else if (e.response && e.response.status === 500) {
+						this.errormsg = "An internal error occurred. We will be notified. Please try again later.";
+						this.detailedmsg = e.toString();
+					} else {
+						this.errormsg = e.toString();
+						this.detailedmsg = null;
+					}
+				}
+			}
+		},
         async userProfile() {
             try {
                 let response = await this.$axios.get("/users/" + this.username + "/profile", {
@@ -280,6 +310,7 @@ export default {
 }
 </script>
 
+
 <template>
     <div class="profile-container">
         <!-- Sidebar -->
@@ -302,19 +333,15 @@ export default {
         <!-- Main content -->
         <div class="main-content">
             <header class="profile-header">
-                <h1>Welcome to your profile, {{ profile.username }}</h1>
+                <h1 class="profile-username">{{ profile.username }}</h1>
                 <div class="profile-stats">
-                    <div>
+                    <div class="stat-item">
                         <p class="stat-value">{{ profile.followersCount }}</p>
                         <p class="stat-label">Followers</p>
                     </div>
-                    <div>
+                    <div class="stat-item">
                         <p class="stat-value">{{ profile.followingCount }}</p>
-                        <p class="stat-label">Followings</p>
-                    </div>
-                    <div>
-                        <p class="stat-value">{{ profile.photoCount }}</p>
-                        <p class="stat-label">Photos</p>
+                        <p class="stat-label">Following</p>
                     </div>
                 </div>
             </header>
@@ -323,6 +350,12 @@ export default {
             <div class="username-change">
                 <input type="text" id="newUsername" v-model="newUsername" class="form-control" placeholder="Insert a new username for your profile...">
                 <button class="btn btn-success" @click="changeName">Change username</button>
+            </div>
+
+            <!-- Photo Upload Section - Styled Like Username Change -->
+            <div class="photo-upload">
+                <input type="file" accept="image/*" class="form-control" @change="uploadFile" ref="file" placeholder="No image selected">
+                <button class="btn btn-primary mt-2" @click="submitFile">Upload Photo</button>
             </div>
 
             <!-- Error Message -->
@@ -360,6 +393,9 @@ export default {
         </div>
     </div>
 </template>
+
+
+
 
 
 <style>
@@ -400,18 +436,26 @@ export default {
     margin-bottom: 2rem;
 }
 
-.profile-header h1 {
-    font-size: 24px;
-    margin-bottom: 10px;
+.profile-username {
+    font-size: 50px; /* Aumenta la dimensione del testo */
+    font-weight: bold; /* Rende il testo in grassetto */
+    margin: 0; /* Rimuove il margine inferiore per allineare meglio con le statistiche */
+    text-align: center; /* Centra l'username */
 }
 
 .profile-stats {
     display: flex;
-    justify-content: space-around;
+    justify-content: center; /* Centra le statistiche */
+    margin-top: 20px; /* Distanza tra l'username e le statistiche */
+}
+
+.stat-item {
+    text-align: center;
+    margin: 0 30px; /* Spazio tra gli elementi delle statistiche */
 }
 
 .stat-value {
-    font-size: 24px;
+    font-size: 40px;
     font-weight: bold;
 }
 
@@ -439,6 +483,12 @@ export default {
 .error-message {
     color: #dc3545;
     margin-bottom: 1rem;
+}
+
+.photo-upload {
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
 }
 
 .photo-grid {
@@ -486,20 +536,11 @@ export default {
     align-items: center;
 }
 
-.btn-dark {
-    border-radius: 5px;
-}
-
-.btn-primary {
-    border-radius: 5px;
-}
-
-.btn-danger {
+.btn-dark, .btn-primary, .btn-danger, .btn-outline-danger {
     border-radius: 5px;
 }
 
 .btn-outline-danger {
-    border-radius: 5px;
     border-color: #dc3545;
     color: #dc3545;
 }
