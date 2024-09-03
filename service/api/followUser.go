@@ -13,14 +13,14 @@ import (
 func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var follow Follow
 	var user User
-	username := ps.ByName("username")
+	username := ps.ByName("singleusername")
 	dbuser, err := rt.db.GetUserId(username)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	user.FromDatabase(dbuser)
-	id, err := strconv.ParseUint(ps.ByName("followid"), 10, 64)
+	id, err := strconv.ParseUint(ps.ByName("singlefolloweduser"), 10, 64)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

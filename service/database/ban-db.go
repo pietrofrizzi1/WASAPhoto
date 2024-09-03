@@ -26,7 +26,7 @@ func (db *appdbimpl) RemoveBan(b Ban) error {
 	return nil
 }
 
-func (db *appdbimpl) GetBans(u User, token uint64) (Ban, error) {
+func (db *appdbimpl) GetBan(u User, token uint64) (Ban, error) {
 	var ban Ban
 	if err := db.c.QueryRow(`SELECT banId, bannedId, userId FROM bans WHERE bannedId = ? AND userId = ?`, u.Id, token).Scan(&ban.BanId, &ban.BannedId, &ban.UserId); err != nil {
 		if err == sql.ErrNoRows {

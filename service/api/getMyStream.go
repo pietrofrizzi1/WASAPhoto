@@ -19,7 +19,7 @@ func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httpro
 	// get the token from the header
 	token := getToken(r.Header.Get("Authorization"))
 	// get the username from the url
-	username := ps.ByName("username")
+	username := ps.ByName("singleusername")
 	user.Id = token
 	user.Username = username
 	// get the id of the user that wants the stream

@@ -14,12 +14,12 @@ import (
 func (rt *_router) deletePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var user User
 	token := getToken(r.Header.Get("Authorization"))
-	photoid, err := strconv.ParseUint(ps.ByName("photoid"), 10, 64)
+	photoid, err := strconv.ParseUint(ps.ByName("singlephoto"), 10, 64)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	username := ps.ByName("username")
+	username := ps.ByName("singleusername")
 	user.Username = username
 	user.Id = token
 	dbuser, err := rt.db.CheckUser(user.ToDatabase())

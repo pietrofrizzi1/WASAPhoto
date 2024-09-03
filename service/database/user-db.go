@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 )
 
 func (db *appdbimpl) CreateUser(u User) (User, error) {
@@ -136,4 +137,42 @@ func (db *appdbimpl) GetBanStatus(r uint64, u uint64) (bool, error) {
 		}
 	}
 	return ret, nil
+}
+
+func (db *appdbimpl) SearchUsersByUsername(username string) ([]User, error) {
+	var users []User
+	fmt.Println("Ciao, mondo!")
+	// Costruisci la query per cercare nomi simili
+	query := `SELECT id, username FROM users WHERE username LIKE ?`
+
+	// Usa il carattere jolly '%' per cercare nomi simili
+	searchPattern := "%" + username + "%"
+
+	// Esegui la query
+	rows, err := db.c.Query(query, searchPattern)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	// Elenco degli utenti trovati
+	for rows.Next() {
+		var user User
+		if err := rows.Scan(&user.Id, &user.Username); err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	// Verifica se ci sono stati errori durante l'iterazione delle righe
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	// Se nessun utente è stato trovato, restituisci un errore
+	if len(users) == 0 {
+		return nil, ErrUserDoesNotExist
+	}
+
+	return users, nil
 }

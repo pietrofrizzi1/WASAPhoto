@@ -12,7 +12,7 @@ const router = createRouter({
 		{path: '/', component: LoginView},
 		{path: '/session', component: HomeView},
 		{path: '/users/:username/profile', component: ProfileView},
-		{path: '/session/search', component: SearchView},
+		{path: '/users/:username/search', component: SearchView, props: route => ({ query: route.query.q }) },
 		{path: '/users/:username/view', component: UserView},
 		{path: '/:catchAll(.*)', component: ErorrView}
 	]

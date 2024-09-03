@@ -70,7 +70,7 @@ export default {
 				this.errormsg = "Please select a file to upload."
 			} else {
 				try {
-					let response = await this.$axios.put("/users/" + this.username + "/photo/" + Math.floor(Math.random() * 10000), this.images, {
+					let response = await this.$axios.put("/users/" + this.username + "/photos/" + Math.floor(Math.random() * 10000), this.images, {
 						headers: {
 							Authorization: "Bearer " + localStorage.getItem("token")
 						}
@@ -115,7 +115,7 @@ export default {
         },
         async userPhotos() {
             try {
-                let response = await this.$axios.get("/users/" + this.username + "/photo", {
+                let response = await this.$axios.get("/users/" + this.username + "/photos", {
                     headers: {
                         Authorization: "Bearer " + localStorage.getItem("token")
                     }
@@ -139,7 +139,7 @@ export default {
         },
         async deletePhoto(photoid) {
             try {
-                let response = await this.$axios.delete("/users/" + this.username + "/photo/" + photoid, {
+                let response = await this.$axios.delete("/users/" + this.username + "/photos/" + photoid, {
                     headers: {
                         Authorization: "Bearer " + localStorage.getItem("token")
                     }
@@ -163,7 +163,7 @@ export default {
                 this.errormsg = "Emtpy username field."
             } else {
                 try {
-                    let response = await this.$axios.put("/user/" + this.username + "/setusername", { username: this.newUsername }, {
+                    let response = await this.$axios.put("/users/" + this.username , {
                         headers: {
                             Authorization: "Bearer " + localStorage.getItem("token")
                         }
@@ -194,7 +194,7 @@ export default {
                 this.errormsg = "Emtpy comment field."
             } else {
                 try {
-                    let response = await this.$axios.put("/users/" + username + "/photo/" + photoid + "/comment/" + Math.floor(Math.random() * 10000), { content: comment }, {
+                    let response = await this.$axios.put("/users/" + username + "/photos/" + photoid + "/comments/" + Math.floor(Math.random() * 10000), { content: comment }, {
                         headers: {
                             Authorization: "Bearer " + localStorage.getItem("token")
                         }
@@ -217,7 +217,7 @@ export default {
         },
         async openLog(username, photoid) {
             try {
-                let response = await this.$axios.get("/users/" + username + "/photo/" + photoid + "/comment", {
+                let response = await this.$axios.get("/users/" + username + "/photos/" + photoid + "/comments", {
                     headers: {
                         Authorization: "Bearer " + localStorage.getItem("token")
                     }
@@ -240,7 +240,7 @@ export default {
         },
         async likePhoto(username, id) {
             try {
-                let response = await this.$axios.put("/users/" + username + "/photo/" + id + "/like/" + Math.floor(Math.random() * 10000), {}, {
+                let response = await this.$axios.put("/users/" + username + "/photos/" + id + "/likes/" + Math.floor(Math.random() * 10000), {}, {
                     headers: {
                         Authorization: "Bearer " + localStorage.getItem("token")
                     }
@@ -262,7 +262,7 @@ export default {
         },
         async deleteLike(username, id) {
             try {
-                let response = await this.$axios.get("/users/" + username + "/photo/" + id + "/like", {
+                let response = await this.$axios.get("/users/" + username + "/photos/" + id + "/likes", {
                     headers: {
                         Authorization: "Bearer " + localStorage.getItem("token")
                     }
@@ -282,7 +282,7 @@ export default {
             }
 
             try {
-                let response = await this.$axios.delete("/users/" + username + "/photo/" + id + "/like/" + this.like.likeId, {
+                let response = await this.$axios.delete("/users/" + username + "/photos/" + id + "/likes/" + this.like.likeId, {
                     headers: {
                         Authorization: "Bearer " + localStorage.getItem("token")
                     }

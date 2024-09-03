@@ -14,12 +14,12 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 	var ban Ban
 	var user User
 	token := getToken(r.Header.Get("Authorization"))
-	id, err := strconv.ParseUint(ps.ByName("banid"), 10, 64)
+	id, err := strconv.ParseUint(ps.ByName("singlebanneduser"), 10, 64)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	username := ps.ByName("username")
+	username := ps.ByName("singleusername")
 	user.Username = username
 	dbuser, err := rt.db.GetUserId(username)
 	if err != nil {

@@ -105,6 +105,7 @@ type AppDatabase interface {
 	CheckUserById(User) (User, error)
 	CheckUserByUsername(User) (User, error)
 	CheckUser(User) (User, error)
+	SearchUsersByUsername(username string) ([]User, error)
 	GetMyStream(User) ([]PhotoStream, error)
 
 	SetFollow(Follow) (Follow, error)
@@ -117,7 +118,7 @@ type AppDatabase interface {
 
 	CreateBan(Ban) (Ban, error)
 	RemoveBan(Ban) error
-	GetBans(User, uint64) (Ban, error)
+	GetBan(User, uint64) (Ban, error)
 	GetBanById(Ban) (Ban, error)
 	UpdateBanStatus(int, uint64, uint64) error
 	GetBanStatus(uint64, uint64) (bool, error)

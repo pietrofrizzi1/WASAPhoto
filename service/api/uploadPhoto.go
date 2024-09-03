@@ -17,14 +17,14 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	var photo Photo
 	token := getToken(r.Header.Get("Authorization"))
 	user.Id = token
-	user.Username = ps.ByName("username")
+	user.Username = ps.ByName("singleusername")
 	dbuser, err := rt.db.CheckUser(user.ToDatabase())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	user.FromDatabase(dbuser)
-	id, err := strconv.ParseUint(ps.ByName("photoid"), 10, 64)
+	id, err := strconv.ParseUint(ps.ByName("singlephoto"), 10, 64)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

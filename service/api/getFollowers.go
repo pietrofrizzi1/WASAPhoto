@@ -13,7 +13,7 @@ func (rt *_router) getFollowers(w http.ResponseWriter, r *http.Request, ps httpr
 	var user User
 	var follow Follow
 	token := getToken(r.Header.Get("Authorization"))
-	user.Username = ps.ByName("username")
+	user.Username = ps.ByName("singleusername")
 	dbuser, err := rt.db.CheckUserByUsername(user.ToDatabase())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

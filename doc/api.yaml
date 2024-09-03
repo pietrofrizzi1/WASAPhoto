@@ -322,6 +322,31 @@ paths:
           "500": { $ref: "#/components/responses/InternalServerError"}
           "401": { $ref: "#/components/responses/Unauthorized"}
           "403": { $ref: "#/components/responses/Forbidden" }
+
+    /users/{singleusername}/photos:
+      parameters:
+        - $ref : "#/components/parameters/singleusername"
+      get: 
+        security:
+        - userAuthorization : []
+        tags: ["Photos"]
+        summary: show the photos of a user
+        operationId: getPhotos
+        responses:
+          "200":
+            description: |
+              photos retrived
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/profile'
+          "400": { $ref: "#/components/responses/BadRequest" }
+          "500": { $ref: "#/components/responses/InternalServerError" }
+          "401": { $ref: "#/components/responses/Unauthorized" }
+          "403": { $ref: "#/components/responses/Forbidden" }
+    
+    
+    
     /users/{singleusername}/photos/{singlephoto}:
       parameters:
         - $ref : "#/components/parameters/singleusername"
@@ -369,6 +394,28 @@ paths:
           "401": { $ref: "#/components/responses/Unauthorized" }
           "403": { $ref: "#/components/responses/Forbidden" }
           
+    /users/{singleusername}/photos/{singlephoto}/likes:
+      parameters:
+        - $ref : "#/components/parameters/singleusername"
+        - $ref : "#/components/parameters/singlephoto"
+      get: 
+        security:
+        - userAuthorization : []
+        tags: ["Likes"]
+        summary: show the number of likes of a picture
+        operationId: getLikes
+        responses:
+          "200":
+            description: |
+              likes retrived
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/profile'
+          "400": { $ref: "#/components/responses/BadRequest" }
+          "500": { $ref: "#/components/responses/InternalServerError" }
+          "401": { $ref: "#/components/responses/Unauthorized" }
+          "403": { $ref: "#/components/responses/Forbidden" }
     
     /users/{singleusername}/photos/{singlephoto}/likes/{singlelike}:
       parameters:
@@ -414,7 +461,30 @@ paths:
           "403": { $ref: "#/components/responses/Forbidden" }
       
       
-    
+    /users/{singleusername}/photos/{singlephoto}/comments:
+      parameters:
+        - $ref : "#/components/parameters/singleusername"
+        - $ref : "#/components/parameters/singlephoto"
+      get: 
+        security:
+        - userAuthorization : []
+        tags: ["Comments"]
+        summary: show the comments of a picture
+        operationId: getComments
+        responses:
+          "200":
+            description: |
+              comments retrived
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/profile'
+          "400": { $ref: "#/components/responses/BadRequest" }
+          "500": { $ref: "#/components/responses/InternalServerError" }
+          "401": { $ref: "#/components/responses/Unauthorized" }
+          "403": { $ref: "#/components/responses/Forbidden" }
+
+
     /users/{singleusername}/photos/{singlephoto}/comments/{singlecomment}:
       parameters:
         - $ref : "#/components/parameters/singleusername"
@@ -458,7 +528,28 @@ paths:
           "403": { $ref: "#/components/responses/Forbidden" }
     
     
-    
+    /users/{singleusername}/banned:
+      parameters:
+        - $ref : "#/components/parameters/singleusername"
+      get: 
+        security:
+        - userAuthorization : []
+        tags: ["Ban"]
+        summary: retrive a ban
+        operationId: getBan
+        responses:
+          "200":
+            description: |
+              ban retrived
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/profile'
+          "400": { $ref: "#/components/responses/BadRequest" }
+          "500": { $ref: "#/components/responses/InternalServerError" }
+          "401": { $ref: "#/components/responses/Unauthorized" }
+          "403": { $ref: "#/components/responses/Forbidden" }
+
     /users/{singleusername}/banned/{singlebanneduser}:
       parameters:
         - $ref : "#/components/parameters/singleusername"
@@ -502,7 +593,28 @@ paths:
           "403": { $ref: "#/components/responses/Forbidden" }
     
     
-    
+    /users/{singleusername}/followed:
+      parameters:
+        - $ref : "#/components/parameters/singleusername"
+      get: 
+        security:
+        - userAuthorization : []
+        tags: ["Follow"]
+        summary: retrive the followers
+        operationId: getFollowers
+        responses:
+          "200":
+            description: |
+              followers retrived
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/profile'
+          "400": { $ref: "#/components/responses/BadRequest" }
+          "500": { $ref: "#/components/responses/InternalServerError" }
+          "401": { $ref: "#/components/responses/Unauthorized" }
+          "403": { $ref: "#/components/responses/Forbidden" }
+
     /users/{singleusername}/followed/{singlefolloweduser}:
       parameters:
         - $ref : "#/components/parameters/singleusername"
