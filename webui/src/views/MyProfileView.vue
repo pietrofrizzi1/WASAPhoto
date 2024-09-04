@@ -163,7 +163,7 @@ export default {
                 this.errormsg = "Emtpy username field."
             } else {
                 try {
-                    let response = await this.$axios.put("/users/" + this.username , {
+                    let response = await this.$axios.put("/users/" + this.username ,{ username: this.newUsername }, {
                         headers: {
                             Authorization: "Bearer " + localStorage.getItem("token")
                         }
@@ -260,7 +260,7 @@ export default {
                 }
             }
         },
-        async deleteLike(username, id) {
+        async removeLike(username, id) {
             try {
                 let response = await this.$axios.get("/users/" + username + "/photos/" + id + "/likes", {
                     headers: {
@@ -317,31 +317,28 @@ export default {
 
 
 <template>
-    <div class="profile-container">
-        <!-- Sidebar -->
-        <nav id="sidebarMenu" class="sidebar bg-light">
-            <div class="position-sticky pt-3 sidebar-sticky">
-                
-                <ul class="nav flex-column">
-                    <li class="nav-item">
+    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+        <div class="position-sticky pt-3 sidebar-sticky">
+            <ul class="nav flex-column">
+                <li class="nav-item">
                         <RouterLink to="/session" class="nav-link">
                             <svg class="feather">
                                 <use href="/feather-sprite-v4.29.0.svg#image" />
                             </svg>
                             Stream
                         </RouterLink>
-                    </li>
-                    <li class="nav-item">
+                </li>
+                <li class="nav-item">
                       <div class="nav-link" @click="doLogout">
                          <svg class="feather">
                           <use href="/feather-sprite-v4.29.0.svg#log-out" />
                          </svg>
                          Logout
                       </div>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+                </li>
+            </ul>
+        </div>
+    </nav>
 
         <!-- Main content -->
         <div class="col-md-9 ms-sm-auto col-lg-10 px-4">
@@ -377,9 +374,10 @@ export default {
                     <ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
 
                     <!-- Photo Grid -->
-                    <div class="photo-grid">
-                        <div class="photo-card" v-for="photo in photoList.photos" :key="photo.id">
-                            <img class="photo-image" :src="photo.file" alt="Photo">
+                    <div class="photo-stream">
+                        <div v-for="photo in photoList.photos" :key="photo.id">
+                          <div  class="card shadow-sm">
+                            <img class="card-img-top" :src="photo.file" alt="Photo">
                             <div class="photo-info">
                                 
                                 <p class="photo-date">Photo uploaded on {{ photo.date }}</p>
@@ -394,10 +392,11 @@ export default {
                                 <div class="photo-actions">
                                     <button class="btn btn-dark" @click="openLog(username, photo.id)">Comments</button>
                                     <button v-if="photo.likeStatus === false" class="btn btn-primary" @click="likePhoto(username, photo.id)">Like</button>
-                                    <button v-if="photo.likeStatus === true" class="btn btn-danger" @click="deleteLike(username, photo.id)">Unlike</button>
+                                    <button v-if="photo.likeStatus === true" class="btn btn-danger" @click="removeLike(username, photo.id)">Unlike</button>
                                     <button class="btn btn-outline-danger" @click="deletePhoto(photo.id)">Delete</button>
                                 </div>
                             </div>
+                          </div>
                         </div>
                     </div>
 
@@ -406,7 +405,7 @@ export default {
                 </div>
             </div>
         </div>
-    </div>
+    
 </template>
 
 
@@ -418,6 +417,45 @@ export default {
 <style scoped>
 .profile-container {
     display: flex;
+}
+.container {
+  margin-top: 0;
+  padding: 0;
+  height: 100vh; /* Ocupa tutta l'altezza dello schermo */
+  
+  display: flex;
+  flex-direction: column;
+}
+
+.photo-stream {
+  flex: 1;
+  overflow-y: auto; /* Abilita lo scorrimento verticale */
+  display: flex;
+  flex-direction: column; /* Dispone le immagini in colonna */
+  padding: 10px;
+  gap: 20px; /* Spazio tra le foto */
+}
+
+
+
+/* Card and image styling */
+.card {
+  border: none;
+  margin: 0 auto; /* Centra la card orizzontalmente */
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  width: auto; /* Lascia che la larghezza si adatti al contenuto */
+  max-width: 90%; /* Limita la larghezza al 90% dello schermo */
+}
+
+.card-img-top {
+  object-fit: contain; /* L'immagine si adatta alla card mantenendo le proporzioni */
+  width: 100%; /* Assicura che l'immagine occupi tutta la larghezza della card */
+  height: auto; /* L'altezza si adatta alla proporzione dell'immagine */
 }
 
 .sidebar {
@@ -437,6 +475,8 @@ export default {
     color: #007bff;
     transition: color 0.2s;
 }
+
+
 
 .nav-link:hover {
     color: #0056b3;

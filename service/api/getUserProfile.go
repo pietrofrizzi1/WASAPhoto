@@ -12,21 +12,21 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	var user User
 	var requestUser User
 	var profile Profile
-	token := getToken(r.Header.Get("Authorization"))
+	token := getAuthorization(r.Header.Get("Authorization"))
 	requestUser.Id = token
-	dbrequestuser, err := rt.db.CheckUserById(requestUser.ToDatabase())
+	dbrequestuser, err := rt.db.CheckUserById(requestUser.CovertForDatabase())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	requestUser.FromDatabase(dbrequestuser)
+	requestUser.ConvertForApplication(dbrequestuser)
 	username := ps.ByName("singleusername")
 	dbuser, err := rt.db.GetUserId(username)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	user.FromDatabase(dbuser)
+	user.ConvertForApplication(dbuser)
 	profile.RequestId = token
 	profile.Id = user.Id
 	profile.Username = user.Username

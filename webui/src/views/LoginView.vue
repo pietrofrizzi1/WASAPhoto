@@ -1,46 +1,69 @@
 <script>
 export default {
-    components: {},
-    data: function () {
-        return {
-            errormsg: null,
-            username: "",
-            profile: {
-                id: 0,
-                username: "",
-            },
-        }
+  data() {
+    return {
+      errormsg: null,
+      username: "",
+      profile: {
+        id: 0,
+        username: "",
+      },
+    };
+  },
+  methods: {
+    async doLogin() {
+      if (this.isUsernameEmpty()) {
+        this.setErrorMsg("Username cannot be empty.");
+        return;
+      }
+
+      try {
+        const response = await this.$axios.post("/session", { username: this.username });
+        this.handleLoginSuccess(response.data);
+      } catch (error) {
+        this.handleLoginError(error);
+      }
     },
-    methods: {
-        async doLogin() {
-            if (this.username == "") {
-                this.errormsg = "Username cannot be empty.";
-            } else {
-                try {
-                    let response = await this.$axios.post("/session", { username: this.username })
-                    this.profile = response.data
-                    localStorage.setItem("token", this.profile.id);
-                    localStorage.setItem("username", this.profile.username);
-                    this.$router.push({ path: '/session' })
-                } catch (e) {
-                    if (e.response && e.response.status === 400) {
-                        this.errormsg = "Form error, please check all fields and try again. If you think that this is an error, write an e-mail to us.";
-                        this.detailedmsg = null;
-                    } else if (e.response && e.response.status === 500) {
-                        this.errormsg = "An internal error occurred. We will be notified. Please try again later.";
-                        this.detailedmsg = e.toString();
-                    } else {
-                        this.errormsg = e.toString();
-                        this.detailedmsg = null;
-                    }
-                }
-            }
-        }
+
+    isUsernameEmpty() {
+      return this.username.trim() === "";
     },
-    mounted() {
-    }
-}
+
+    setErrorMsg(message) {
+      this.errormsg = message;
+      this.detailedmsg = null; // Clear detailed message on new error
+    },
+
+    handleLoginSuccess(profileData) {
+      this.profile = profileData;
+      localStorage.setItem("token", this.profile.id);
+      localStorage.setItem("username", this.profile.username);
+      this.$router.push({ path: '/session' });
+    },
+
+    handleLoginError(error) {
+      if (error.response) {
+        switch (error.response.status) {
+          case 400:
+            this.setErrorMsg("Form error, please check all fields and try again. If you think that this is an error, write an e-mail to us.");
+            break;
+          case 500:
+            this.setErrorMsg("An internal error occurred. We will be notified. Please try again later.");
+            this.detailedmsg = error.toString();
+            break;
+          default:
+            this.setErrorMsg("An unexpected error occurred.");
+            this.detailedmsg = error.toString();
+        }
+      } else {
+        this.setErrorMsg("An unexpected error occurred.");
+        this.detailedmsg = error.toString();
+      }
+    },
+  },
+};
 </script>
+
 
 <template>
     <div class="login-wrapper">

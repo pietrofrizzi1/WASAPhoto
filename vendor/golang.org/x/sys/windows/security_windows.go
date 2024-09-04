@@ -632,7 +632,7 @@ func (tml *Tokenmandatorylabel) Size() uint32 {
 //sys	LookupPrivilegeValue(systemname *uint16, name *uint16, luid *LUID) (err error) = advapi32.LookupPrivilegeValueW
 //sys	AdjustTokenPrivileges(token Token, disableAllPrivileges bool, newstate *Tokenprivileges, buflen uint32, prevstate *Tokenprivileges, returnlen *uint32) (err error) = advapi32.AdjustTokenPrivileges
 //sys	AdjustTokenGroups(token Token, resetToDefault bool, newstate *Tokengroups, buflen uint32, prevstate *Tokengroups, returnlen *uint32) (err error) = advapi32.AdjustTokenGroups
-//sys	GetTokenInformation(token Token, infoClass uint32, info *byte, infoLen uint32, returnedLen *uint32) (err error) = advapi32.GetTokenInformation
+//sys	getAuthorizationInformation(token Token, infoClass uint32, info *byte, infoLen uint32, returnedLen *uint32) (err error) = advapi32.getAuthorizationInformation
 //sys	SetTokenInformation(token Token, infoClass uint32, info *byte, infoLen uint32) (err error) = advapi32.SetTokenInformation
 //sys	DuplicateTokenEx(existingToken Token, desiredAccess uint32, tokenAttributes *SecurityAttributes, impersonationLevel uint32, tokenType uint32, newToken *Token) (err error) = advapi32.DuplicateTokenEx
 //sys	GetUserProfileDirectory(t Token, dir *uint16, dirLen *uint32) (err error) = userenv.GetUserProfileDirectoryW
@@ -692,7 +692,7 @@ func (t Token) getInfo(class uint32, initSize int) (unsafe.Pointer, error) {
 	n := uint32(initSize)
 	for {
 		b := make([]byte, n)
-		e := GetTokenInformation(t, class, &b[0], uint32(len(b)), &n)
+		e := getAuthorizationInformation(t, class, &b[0], uint32(len(b)), &n)
 		if e == nil {
 			return unsafe.Pointer(&b[0]), nil
 		}
@@ -705,8 +705,8 @@ func (t Token) getInfo(class uint32, initSize int) (unsafe.Pointer, error) {
 	}
 }
 
-// GetTokenUser retrieves access token t user account information.
-func (t Token) GetTokenUser() (*Tokenuser, error) {
+// getAuthorizationUser retrieves access token t user account information.
+func (t Token) getAuthorizationUser() (*Tokenuser, error) {
 	i, e := t.getInfo(TokenUser, 50)
 	if e != nil {
 		return nil, e
@@ -714,8 +714,8 @@ func (t Token) GetTokenUser() (*Tokenuser, error) {
 	return (*Tokenuser)(i), nil
 }
 
-// GetTokenGroups retrieves group accounts associated with access token t.
-func (t Token) GetTokenGroups() (*Tokengroups, error) {
+// getAuthorizationGroups retrieves group accounts associated with access token t.
+func (t Token) getAuthorizationGroups() (*Tokengroups, error) {
 	i, e := t.getInfo(TokenGroups, 50)
 	if e != nil {
 		return nil, e
@@ -723,10 +723,10 @@ func (t Token) GetTokenGroups() (*Tokengroups, error) {
 	return (*Tokengroups)(i), nil
 }
 
-// GetTokenPrimaryGroup retrieves access token t primary group information.
+// getAuthorizationPrimaryGroup retrieves access token t primary group information.
 // A pointer to a SID structure representing a group that will become
 // the primary group of any objects created by a process using this access token.
-func (t Token) GetTokenPrimaryGroup() (*Tokenprimarygroup, error) {
+func (t Token) getAuthorizationPrimaryGroup() (*Tokenprimarygroup, error) {
 	i, e := t.getInfo(TokenPrimaryGroup, 50)
 	if e != nil {
 		return nil, e
@@ -757,7 +757,7 @@ func (t Token) GetUserProfileDirectory() (string, error) {
 func (token Token) IsElevated() bool {
 	var isElevated uint32
 	var outLen uint32
-	err := GetTokenInformation(token, TokenElevation, (*byte)(unsafe.Pointer(&isElevated)), uint32(unsafe.Sizeof(isElevated)), &outLen)
+	err := getAuthorizationInformation(token, TokenElevation, (*byte)(unsafe.Pointer(&isElevated)), uint32(unsafe.Sizeof(isElevated)), &outLen)
 	if err != nil {
 		return false
 	}
@@ -768,7 +768,7 @@ func (token Token) IsElevated() bool {
 func (token Token) GetLinkedToken() (Token, error) {
 	var linkedToken Token
 	var outLen uint32
-	err := GetTokenInformation(token, TokenLinkedToken, (*byte)(unsafe.Pointer(&linkedToken)), uint32(unsafe.Sizeof(linkedToken)), &outLen)
+	err := getAuthorizationInformation(token, TokenLinkedToken, (*byte)(unsafe.Pointer(&linkedToken)), uint32(unsafe.Sizeof(linkedToken)), &outLen)
 	if err != nil {
 		return Token(0), err
 	}

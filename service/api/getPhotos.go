@@ -14,22 +14,22 @@ func (rt *_router) getPhotos(w http.ResponseWriter, r *http.Request, ps httprout
 	var user User
 	var requestUser User
 	var photoList database.Photos
-	token := getToken(r.Header.Get("Authorization"))
+	token := getAuthorization(r.Header.Get("Authorization"))
 	requestUser.Id = token
-	dbrequestuser, err := rt.db.CheckUserById(requestUser.ToDatabase())
+	dbrequestuser, err := rt.db.CheckUserById(requestUser.CovertForDatabase())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	requestUser.FromDatabase(dbrequestuser)
+	requestUser.ConvertForApplication(dbrequestuser)
 	username := ps.ByName("singleusername")
 	dbuser, err := rt.db.GetUserId(username)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	user.FromDatabase(dbuser)
-	photos, err := rt.db.GetPhotos(user.ToDatabase(), token)
+	user.ConvertForApplication(dbuser)
+	photos, err := rt.db.GetPhotos(user.CovertForDatabase(), token)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

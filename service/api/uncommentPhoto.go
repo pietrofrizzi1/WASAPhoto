@@ -29,14 +29,14 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	user.FromDatabase(dbuser)
+	user.ConvertForApplication(dbuser)
 	comment.Id = commentid
-	token := getToken(r.Header.Get("Authorization"))
+	token := getAuthorization(r.Header.Get("Authorization"))
 	comment.UserId = token
 	comment.PhotoId = photoid
 	comment.PhotoOwner = user.Id
-	err = rt.db.RemoveComment(comment.CommentToDatabase())
-	if errors.Is(err, database.ErrCommentDoesNotExist) {
+	err = rt.db.RemoveComment(comment.CommentCovertForDatabase())
+	if errors.Is(err, database.ErrCommentNotFound) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	} else if err != nil {

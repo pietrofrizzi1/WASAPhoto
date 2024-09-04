@@ -15,33 +15,33 @@ func (rt *_router) getComments(w http.ResponseWriter, r *http.Request, ps httpro
 	var requestUser User
 	var photo Photo
 	var commentList database.Comments
-	token := getToken(r.Header.Get("Authorization"))
+	token := getAuthorization(r.Header.Get("Authorization"))
 	requestUser.Id = token
-	dbrequestuser, err := rt.db.CheckUserById(requestUser.ToDatabase())
+	dbrequestuser, err := rt.db.CheckUserById(requestUser.CovertForDatabase())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	requestUser.FromDatabase(dbrequestuser)
+	requestUser.ConvertForApplication(dbrequestuser)
 	photoid, err := strconv.ParseUint(ps.ByName("singlephoto"), 10, 64)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	photo.Id = photoid
-	dbphoto, err := rt.db.CheckPhoto(photo.PhotoToDatabase())
+	dbphoto, err := rt.db.CheckPhoto(photo.PhotoCovertForDatabase())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	photo.PhotoFromDatabase(dbphoto)
+	photo.PhotoConvertForApplication(dbphoto)
 	username := ps.ByName("singleusername")
 	dbuser, err := rt.db.GetUserId(username)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	user.FromDatabase(dbuser)
+	user.ConvertForApplication(dbuser)
 	comments, err := rt.db.GetComments(photo.Id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

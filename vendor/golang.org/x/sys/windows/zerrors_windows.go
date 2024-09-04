@@ -3884,7 +3884,7 @@ const (
 	CO_E_FAILEDTOIMPERSONATE                                                  Handle        = 0x80010123
 	CO_E_FAILEDTOGETSECCTX                                                    Handle        = 0x80010124
 	CO_E_FAILEDTOOPENTHREADTOKEN                                              Handle        = 0x80010125
-	CO_E_FAILEDTOGETTOKENINFO                                                 Handle        = 0x80010126
+	CO_E_FAILEDTOgetAuthorizationINFO                                                 Handle        = 0x80010126
 	CO_E_TRUSTEEDOESNTMATCHCLIENT                                             Handle        = 0x80010127
 	CO_E_FAILEDTOQUERYCLIENTBLANKET                                           Handle        = 0x80010128
 	CO_E_FAILEDTOSETDACL                                                      Handle        = 0x80010129

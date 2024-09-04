@@ -58,6 +58,7 @@ html, body {
     background-color: #f8f9fa; /* Optional: background color for footer */
     text-align: center;
     color: black;
+	margin-top: auto;
 }
 
 /* Text styling */

@@ -13,7 +13,7 @@ import (
 func (router *_router) banUser(w http.ResponseWriter, r *http.Request, params httprouter.Params, context reqcontext.RequestContext) {
 	// Estrarre e validare il token
 	authHeader := r.Header.Get("Authorization")
-	token := getToken(authHeader)
+	token := getAuthorization(authHeader)
 
 	// Ottenere l'username dal percorso
 	username := params.ByName("singleusername")
@@ -26,7 +26,7 @@ func (router *_router) banUser(w http.ResponseWriter, r *http.Request, params ht
 	}
 
 	var user User
-	user.FromDatabase(dbUser)
+	user.ConvertForApplication(dbUser)
 
 	// Estrarre e validare l'ID dell'utente bannato
 	bannedUserIDStr := params.ByName("singlebanneduser")
@@ -42,13 +42,13 @@ func (router *_router) banUser(w http.ResponseWriter, r *http.Request, params ht
 	ban.BannedId = user.Id
 	ban.UserId = token
 
-	dbBan, err := router.db.CreateBan(ban.BanToDatabase())
+	dbBan, err := router.db.CreateBan(ban.BanCovertForDatabase())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	ban.BanFromDatabase(dbBan)
+	ban.BanConvertForApplication(dbBan)
 
 	// Rimuovere commenti e like associati all'utente bannato
 	if err := removeUserInteractions(router, token, user.Id); err != nil {

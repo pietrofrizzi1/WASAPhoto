@@ -21,7 +21,7 @@ func (db *appdbimpl) RemoveBan(b Ban) error {
 	if err != nil {
 		return err
 	} else if affected == 0 {
-		return ErrBanDoesNotExist
+		return ErrBanNotFound
 	}
 	return nil
 }
@@ -30,7 +30,7 @@ func (db *appdbimpl) GetBan(u User, token uint64) (Ban, error) {
 	var ban Ban
 	if err := db.c.QueryRow(`SELECT banId, bannedId, userId FROM bans WHERE bannedId = ? AND userId = ?`, u.Id, token).Scan(&ban.BanId, &ban.BannedId, &ban.UserId); err != nil {
 		if err == sql.ErrNoRows {
-			return ban, ErrLikeDoesNotExist
+			return ban, ErrLikeNotFound
 		}
 	}
 	return ban, nil
@@ -40,7 +40,7 @@ func (db *appdbimpl) GetBanById(b Ban) (Ban, error) {
 	var ban Ban
 	if err := db.c.QueryRow(`SELECT banId, bannedId, userId FROM bans WHERE banId = ?`, b.BanId).Scan(&ban.BanId, &ban.BannedId, &ban.UserId); err != nil {
 		if err == sql.ErrNoRows {
-			return ban, ErrLikeDoesNotExist
+			return ban, ErrLikeNotFound
 		}
 	}
 	return ban, nil
@@ -55,7 +55,7 @@ func (db *appdbimpl) UpdateBanStatus(status int, followerId uint64, userId uint6
 	if err != nil {
 		return err
 	} else if affected == 0 {
-		return ErrBanDoesNotExist
+		return ErrBanNotFound
 	}
 	return nil
 }

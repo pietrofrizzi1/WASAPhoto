@@ -4,6 +4,7 @@ import (
 	"github.com/pietrofrizzi1/WASAPhoto/service/database"
 )
 
+// Profile rappresenta un profilo utente
 type Profile struct {
 	RequestId      uint64 `json:"requestId"`
 	Id             uint64 `json:"id"`
@@ -15,23 +16,13 @@ type Profile struct {
 	CheckIfBanned  bool   `json:"checkIfBanned"`
 }
 
+// User rappresenta un utente
 type User struct {
 	Id       uint64 `json:"id"`
 	Username string `json:"username"`
 }
 
-func (u *User) FromDatabase(user database.User) {
-	u.Id = user.Id
-	u.Username = user.Username
-}
-
-func (u *User) ToDatabase() database.User {
-	return database.User{
-		Id:       u.Id,
-		Username: u.Username,
-	}
-}
-
+// PhotoStream rappresenta uno stream di foto
 type PhotoStream struct {
 	Id           uint64 `json:"id"`
 	UserId       uint64 `json:"userId"`
@@ -41,67 +32,21 @@ type PhotoStream struct {
 	CommentCount int    `json:"commentCount"`
 }
 
-func (s *PhotoStream) PhotoStreamFromDatabase(photoStream database.PhotoStream) {
-	s.Id = photoStream.Id
-	s.UserId = photoStream.UserId
-	s.File = photoStream.File
-	s.Date = photoStream.Date
-	s.LikeCount = photoStream.LikeCount
-	s.CommentCount = photoStream.CommentCount
-}
-
-func (s *PhotoStream) PhotoStreamToDatabase() database.PhotoStream {
-	return database.PhotoStream{
-		Id:           s.Id,
-		UserId:       s.UserId,
-		File:         s.File,
-		Date:         s.Date,
-		LikeCount:    s.LikeCount,
-		CommentCount: s.CommentCount,
-	}
-
-}
-
+// Follow rappresenta una relazione di follow
 type Follow struct {
 	FollowId   uint64 `json:"followId"`
 	FollowedId uint64 `json:"followedId"`
 	UserId     uint64 `json:"userId"`
 }
 
-func (f *Follow) FollowFromDatabase(follow database.Follow) {
-	f.FollowId = follow.FollowId
-	f.FollowedId = follow.FollowedId
-	f.UserId = follow.UserId
-}
-
-func (f *Follow) FollowToDatabase() database.Follow {
-	return database.Follow{
-		FollowId:   f.FollowId,
-		FollowedId: f.FollowedId,
-		UserId:     f.UserId,
-	}
-}
-
+// Ban rappresenta un ban
 type Ban struct {
 	BanId    uint64 `json:"banId"`
 	BannedId uint64 `json:"bannedId"`
 	UserId   uint64 `json:"userId"`
 }
 
-func (b *Ban) BanFromDatabase(ban database.Ban) {
-	b.BanId = ban.BanId
-	b.BannedId = ban.BannedId
-	b.UserId = ban.UserId
-}
-
-func (b *Ban) BanToDatabase() database.Ban {
-	return database.Ban{
-		BanId:    b.BanId,
-		BannedId: b.BannedId,
-		UserId:   b.UserId,
-	}
-}
-
+// Photo rappresenta una foto
 type Photo struct {
 	Id            uint64 `json:"id"`
 	UserId        uint64 `json:"userId"`
@@ -111,7 +56,91 @@ type Photo struct {
 	CommentsCount int    `json:"commentsCount"`
 }
 
-func (p *Photo) PhotoFromDatabase(photo database.Photo) {
+// Like rappresenta un like
+type Like struct {
+	LikeId          uint64 `json:"likeId"`
+	UserIdentifier  uint64 `json:"identifier"`
+	PhotoIdentifier uint64 `json:"photoIdentifier"`
+	PhotoOwner      uint64 `json:"photoOwner"`
+}
+
+// Comment rappresenta un commento
+type Comment struct {
+	Id         uint64 `json:"id"`
+	UserId     uint64 `json:"userId"`
+	PhotoId    uint64 `json:"photoId"`
+	PhotoOwner uint64 `json:"photoOwner"`
+	Content    string `json:"content"`
+}
+
+// Metodi di Conversione (Conversion Methods)
+
+// Metodi di conversione per User
+func (u *User) ConvertForApplication(user database.User) {
+	u.Id = user.Id
+	u.Username = user.Username
+}
+
+func (u *User) CovertForDatabase() database.User {
+	return database.User{
+		Id:       u.Id,
+		Username: u.Username,
+	}
+}
+
+// Metodi di conversione per PhotoStream
+func (s *PhotoStream) PhotoStreamConvertForApplication(photoStream database.PhotoStream) {
+	s.Id = photoStream.Id
+	s.UserId = photoStream.UserId
+	s.File = photoStream.File
+	s.Date = photoStream.Date
+	s.LikeCount = photoStream.LikeCount
+	s.CommentCount = photoStream.CommentCount
+}
+
+func (s *PhotoStream) PhotoStreamCovertForDatabase() database.PhotoStream {
+	return database.PhotoStream{
+		Id:           s.Id,
+		UserId:       s.UserId,
+		File:         s.File,
+		Date:         s.Date,
+		LikeCount:    s.LikeCount,
+		CommentCount: s.CommentCount,
+	}
+}
+
+// Metodi di conversione per Follow
+func (f *Follow) FollowConvertForApplication(follow database.Follow) {
+	f.FollowId = follow.FollowId
+	f.FollowedId = follow.FollowedId
+	f.UserId = follow.UserId
+}
+
+func (f *Follow) FollowCovertForDatabase() database.Follow {
+	return database.Follow{
+		FollowId:   f.FollowId,
+		FollowedId: f.FollowedId,
+		UserId:     f.UserId,
+	}
+}
+
+// Metodi di conversione per Ban
+func (b *Ban) BanConvertForApplication(ban database.Ban) {
+	b.BanId = ban.BanId
+	b.BannedId = ban.BannedId
+	b.UserId = ban.UserId
+}
+
+func (b *Ban) BanCovertForDatabase() database.Ban {
+	return database.Ban{
+		BanId:    b.BanId,
+		BannedId: b.BannedId,
+		UserId:   b.UserId,
+	}
+}
+
+// Metodi di conversione per Photo
+func (p *Photo) PhotoConvertForApplication(photo database.Photo) {
 	p.Id = photo.Id
 	p.UserId = photo.UserId
 	p.File = photo.File
@@ -120,7 +149,7 @@ func (p *Photo) PhotoFromDatabase(photo database.Photo) {
 	p.CommentsCount = photo.CommentsCount
 }
 
-func (p *Photo) PhotoToDatabase() database.Photo {
+func (p *Photo) PhotoCovertForDatabase() database.Photo {
 	return database.Photo{
 		Id:            p.Id,
 		UserId:        p.UserId,
@@ -131,22 +160,15 @@ func (p *Photo) PhotoToDatabase() database.Photo {
 	}
 }
 
-type Like struct {
-	LikeId          uint64 `json:"likeId"`
-	UserIdentifier  uint64 `json:"identifier"`
-	PhotoIdentifier uint64 `json:"photoIdentifier"`
-	PhotoOwner      uint64 `json:"photoOwner"`
-}
-
-func (l *Like) LikeFromDatabase(like database.Like) {
+// Metodi di conversione per Like
+func (l *Like) LikeConvertForApplication(like database.Like) {
 	l.LikeId = like.LikeId
 	l.UserIdentifier = like.UserIdentifier
 	l.PhotoIdentifier = like.PhotoIdentifier
 	l.PhotoOwner = like.PhotoOwner
-
 }
 
-func (l *Like) LikeToDatabase() database.Like {
+func (l *Like) LikeCovertForDatabase() database.Like {
 	return database.Like{
 		LikeId:          l.LikeId,
 		UserIdentifier:  l.UserIdentifier,
@@ -155,22 +177,15 @@ func (l *Like) LikeToDatabase() database.Like {
 	}
 }
 
-type Comment struct {
-	Id         uint64 `json:"id"`
-	UserId     uint64 `json:"userId"`
-	PhotoId    uint64 `json:"photoId"`
-	PhotoOwner uint64 `json:"photoOwner"`
-	Content    string `json:"content"`
-}
-
-func (c *Comment) CommentFromDatabase(comment database.Comment) {
+// Metodi di conversione per Comment
+func (c *Comment) CommentConvertForApplication(comment database.Comment) {
 	c.Id = comment.Id
 	c.UserId = comment.UserId
 	c.PhotoId = comment.PhotoId
 	c.Content = comment.Content
 }
 
-func (c *Comment) CommentToDatabase() database.Comment {
+func (c *Comment) CommentCovertForDatabase() database.Comment {
 	return database.Comment{
 		Id:         c.Id,
 		UserId:     c.UserId,

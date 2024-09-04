@@ -16,14 +16,14 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, ps http
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	token := getToken(r.Header.Get("Authorization"))
+	token := getAuthorization(r.Header.Get("Authorization"))
 	user.Id = token
-	dbuser, err := rt.db.SetUsername(user.ToDatabase(), username)
+	dbuser, err := rt.db.SetUsername(user.CovertForDatabase(), username)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	user.FromDatabase(dbuser)
+	user.ConvertForApplication(dbuser)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	_ = json.NewEncoder(w).Encode(user)

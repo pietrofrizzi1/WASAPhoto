@@ -36,7 +36,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	}
 
 	var user User
-	user.FromDatabase(userData)
+	user.ConvertForApplication(userData)
 
 	// Extract comment ID from request parameters
 	commentID, err := strconv.ParseUint(ps.ByName("singlecomment"), 10, 64)
@@ -47,20 +47,20 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 
 	// Prepare the comment object with extracted data
 	newComment.Id = commentID
-	token := getToken(r.Header.Get("Authorization"))
+	token := getAuthorization(r.Header.Get("Authorization"))
 	newComment.UserId = token
 	newComment.PhotoId = photoID
 	newComment.PhotoOwner = user.Id
 
 	// Save the comment to the database
-	savedCommentData, err := rt.db.SetComment(newComment.CommentToDatabase())
+	savedCommentData, err := rt.db.SetComment(newComment.CommentCovertForDatabase())
 	if err != nil {
 		http.Error(w, "Error saving comment: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// Populate the comment object with saved data
-	newComment.CommentFromDatabase(savedCommentData)
+	newComment.CommentConvertForApplication(savedCommentData)
 
 	// Respond with the created comment
 	w.Header().Set("Content-Type", "application/json")

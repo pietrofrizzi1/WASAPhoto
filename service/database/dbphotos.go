@@ -32,7 +32,7 @@ func (db *appdbimpl) GetPhotos(u User, token uint64) ([]Photo, error) {
 	var ret []Photo
 	rows, err := db.c.Query(`SELECT id, userId, photo, date FROM photos WHERE userId = ?`, u.Id)
 	if err != nil {
-		return ret, ErrUserDoesNotExist
+		return ret, ErrUserNotFound
 	}
 	defer func() { _ = rows.Close() }()
 	for rows.Next() {
@@ -43,12 +43,12 @@ func (db *appdbimpl) GetPhotos(u User, token uint64) ([]Photo, error) {
 		}
 		if err := db.c.QueryRow(`SELECT COUNT(*) FROM likes WHERE photoId = ?`, b.Id).Scan(&b.LikesCount); err != nil {
 			if err == sql.ErrNoRows {
-				return nil, ErrLikeDoesNotExist
+				return nil, ErrLikeNotFound
 			}
 		}
 		if err := db.c.QueryRow(`SELECT COUNT(*) FROM comments WHERE photoId = ?`, b.Id).Scan(&b.CommentsCount); err != nil {
 			if err == sql.ErrNoRows {
-				return nil, ErrLikeDoesNotExist
+				return nil, ErrLikeNotFound
 			}
 		}
 		if err := db.c.QueryRow(`SELECT EXISTS(SELECT 1 FROM likes WHERE userId = ? AND photoId = ?)`, token, b.Id).Scan(&b.LikeStatus); err != nil {
@@ -68,7 +68,7 @@ func (db *appdbimpl) CheckPhoto(p Photo) (Photo, error) {
 	var photo Photo
 	if err := db.c.QueryRow(`SELECT Id, userId, photo, date FROM photos WHERE Id=?`, p.Id).Scan(&photo.Id, &photo.UserId, &photo.File, &photo.Date); err != nil {
 		if err == sql.ErrNoRows {
-			return photo, ErrUserDoesNotExist
+			return photo, ErrUserNotFound
 		}
 	}
 	return photo, nil

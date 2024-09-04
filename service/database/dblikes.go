@@ -21,7 +21,7 @@ func (db *appdbimpl) RemoveLike(l Like) error {
 	if err != nil {
 		return err
 	} else if affected == 0 {
-		return ErrLikeDoesNotExist
+		return ErrLikeNotFound
 	}
 	return nil
 }
@@ -39,7 +39,7 @@ func (db *appdbimpl) GetLike(photoid uint64, token uint64) (Like, error) {
 
 	if err := db.c.QueryRow(`SELECT Id, userId, photoId, photoOwner FROM likes WHERE userId = ? AND photoId = ?`, token, photoid).Scan(&like.LikeId, &like.UserIdentifier, &like.PhotoIdentifier, &like.PhotoOwner); err != nil {
 		if err == sql.ErrNoRows {
-			return like, ErrLikeDoesNotExist
+			return like, ErrLikeNotFound
 		}
 	}
 	return like, nil
@@ -49,7 +49,7 @@ func (db *appdbimpl) GetLikeById(l Like) (Like, error) {
 	var like Like
 	if err := db.c.QueryRow(`SELECT Id, userId, photoId, photoOwner FROM likes WHERE id = ?`, l.LikeId).Scan(&like.LikeId, &like.UserIdentifier, &like.PhotoIdentifier, &like.PhotoOwner); err != nil {
 		if err == sql.ErrNoRows {
-			return like, ErrLikeDoesNotExist
+			return like, ErrLikeNotFound
 		}
 	}
 	return like, nil
@@ -59,7 +59,7 @@ func (db *appdbimpl) GetLikesCount(photoid uint64) (int, error) {
 	var count int
 	if err := db.c.QueryRow(`SELECT COUNT(*) FROM likes WHERE photoId = ?`, photoid).Scan(&count); err != nil {
 		if err == sql.ErrNoRows {
-			return count, ErrLikeDoesNotExist
+			return count, ErrLikeNotFound
 		}
 	}
 	return count, nil

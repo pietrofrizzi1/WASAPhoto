@@ -6,23 +6,25 @@ import (
 	"fmt"
 )
 
-var ErrUserDoesNotExist = errors.New("User does not exist")
-var ErrPhotoDoesNotExist = errors.New("Photo does not exist")
-var ErrBanDoesNotExist = errors.New("Ban does not exist")
-var ErrFollowDoesNotExist = errors.New("Follow does not exist")
-var ErrCommentDoesNotExist = errors.New("Comment does not exist")
-var ErrLikeDoesNotExist = errors.New("Like does not exist")
+// Errori comuni
+var (
+	ErrUserNotFound    = errors.New("User does not exist")
+	ErrPhotoNotFound   = errors.New("Photo does not exist")
+	ErrBanNotFound     = errors.New("Ban does not exist")
+	ErrFollowNotFound  = errors.New("Follow does not exist")
+	ErrCommentNotFound = errors.New("Comment does not exist")
+	ErrLikeNotFound    = errors.New("Like does not exist")
+)
 
+// Tipi di Dati (Struct)
+
+// User rappresenta un utente
 type User struct {
 	Id       uint64 `json:"id"`
 	Username string `json:"username"`
 }
 
-type Steam struct {
-	Identifier uint64        `json:"identifier"`
-	Photos     []PhotoStream `json:"photoStream"`
-}
-
+// PhotoStream rappresenta uno stream di foto
 type PhotoStream struct {
 	Id           uint64 `json:"id"`
 	UserId       uint64 `json:"userId"`
@@ -34,35 +36,47 @@ type PhotoStream struct {
 	LikeStatus   bool   `json:"likeStatus"`
 }
 
+// Stream rappresenta uno stream di foto
+type Stream struct {
+	Identifier uint64        `json:"identifier"`
+	Photos     []PhotoStream `json:"photoStream"`
+}
+
+// Followers rappresenta i follower di un utente
 type Followers struct {
 	Id        uint64   `json:"identifier"`
 	Followers []Follow `json:"Followers"`
 }
 
+// Follow rappresenta una relazione di follow
 type Follow struct {
 	FollowId   uint64 `json:"followId"`
 	FollowedId uint64 `json:"followedId"`
 	UserId     uint64 `json:"userId"`
 }
 
+// Bans rappresenta i bans di un utente
 type Bans struct {
 	Identifier uint64 `json:"identifier"`
 	Username   string `json:"username"`
 	Bans       []Ban  `json:"bans"`
 }
 
+// Ban rappresenta un ban
 type Ban struct {
 	BanId    uint64 `json:"banId"`
 	BannedId uint64 `json:"bannedId"`
 	UserId   uint64 `json:"userId"`
 }
 
+// Photos rappresenta una collezione di foto
 type Photos struct {
 	RequestUser uint64  `json:"requestUser"`
 	Identifier  uint64  `json:"identifier"`
 	Photos      []Photo `json:"photos"`
 }
 
+// Photo rappresenta una foto
 type Photo struct {
 	Id            uint64 `json:"id"`
 	UserId        uint64 `json:"userId"`
@@ -73,6 +87,7 @@ type Photo struct {
 	LikeStatus    bool   `json:"likeStatus"`
 }
 
+// Like rappresenta un like
 type Like struct {
 	LikeId          uint64 `json:"likeId"`
 	UserIdentifier  uint64 `json:"identifier"`
@@ -80,6 +95,7 @@ type Like struct {
 	PhotoOwner      uint64 `json:"photoOwner"`
 }
 
+// Comments rappresenta i commenti su una foto
 type Comments struct {
 	RequestIdentifier uint64    `json:"requestIdentifier"`
 	PhotoIdentifier   uint64    `json:"photoIdentifier"`
@@ -87,6 +103,7 @@ type Comments struct {
 	Comments          []Comment `json:"comments"`
 }
 
+// Comment rappresenta un commento
 type Comment struct {
 	Id            uint64 `json:"id"`
 	UserId        uint64 `json:"userId"`
@@ -97,7 +114,7 @@ type Comment struct {
 	Content       string `json:"content"`
 }
 
-// AppDatabase is the high level interface for the DB
+// AppDatabase è l'interfaccia ad alto livello per il database
 type AppDatabase interface {
 	CreateUser(User) (User, error)
 	SetUsername(User, string) (User, error)
@@ -146,24 +163,25 @@ type AppDatabase interface {
 	Ping() error
 }
 
-// AppDatabaseImpl is the implementation of the AppDatabase interface
+// appdbimpl è l'implementazione dell'interfaccia AppDatabase
 type appdbimpl struct {
 	c *sql.DB
 }
 
-// New returns a new instance of AppDatabase based on the SQLite connection `db`.
-// `db` is required - an error will be returned if `db` is `nil`.
+// New restituisce una nuova istanza di AppDatabase basata sulla connessione SQLite `db`.
+// `db` è obbligatorio - verrà restituito un errore se `db` è `nil`.
 func New(db *sql.DB) (AppDatabase, error) {
-	// Check if db is nil
 	if db == nil {
 		return nil, errors.New("database is required when building a AppDatabase")
 	}
-	// Enable foreign keys
+
+	// Abilita le chiavi esterne
 	_, err := db.Exec("PRAGMA foreign_keys = ON")
 	if err != nil {
 		return nil, err
 	}
-	// Check if table exists. If not, the database is empty, and we need to create the structure
+
+	// Verifica se la tabella esiste. In caso contrario, crea la struttura del database
 	var tableName string
 	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='users';`).Scan(&tableName)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -175,7 +193,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 			Id INTEGER NOT NULL PRIMARY KEY, 
 			userId INTEGER NOT NULL,
 			photo BLOB,
-			date TEXT ,
+			date TEXT,
 			FOREIGN KEY (userId) REFERENCES users(Id)
 			);`
 		likesDatabase := `CREATE TABLE likes (
@@ -207,6 +225,8 @@ func New(db *sql.DB) (AppDatabase, error) {
 			userId INTEGER NOT NULL,
 			FOREIGN KEY (userId) REFERENCES users(Id)
 			);`
+
+		// Crea le tabelle nel database
 		_, err = db.Exec(usersDatabase)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure: %w", err)
@@ -238,7 +258,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 	}, nil
 }
 
-// Ping checks the connection to the database.
+// Ping controlla la connessione al database.
 func (db *appdbimpl) Ping() error {
 	return db.c.Ping()
 }

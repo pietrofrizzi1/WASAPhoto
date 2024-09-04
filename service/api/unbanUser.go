@@ -13,7 +13,7 @@ import (
 func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var ban Ban
 	var user User
-	token := getToken(r.Header.Get("Authorization"))
+	token := getAuthorization(r.Header.Get("Authorization"))
 	id, err := strconv.ParseUint(ps.ByName("singlebanneduser"), 10, 64)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -26,12 +26,12 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	user.FromDatabase(dbuser)
+	user.ConvertForApplication(dbuser)
 	ban.BanId = id
 	ban.UserId = token
 	ban.BannedId = user.Id
-	err = rt.db.RemoveBan(ban.BanToDatabase())
-	if errors.Is(err, database.ErrBanDoesNotExist) {
+	err = rt.db.RemoveBan(ban.BanCovertForDatabase())
+	if errors.Is(err, database.ErrBanNotFound) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	} else if err != nil {

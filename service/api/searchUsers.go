@@ -13,16 +13,16 @@ func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httpro
 	fmt.Println("Ciao, mondo!")
 	var requestUser User
 	var userList []User
-	token := getToken(r.Header.Get("Authorization"))
+	token := getAuthorization(r.Header.Get("Authorization"))
 	requestUser.Id = token
 
 	// Verifica dell'utente richiedente tramite il token
-	dbrequestuser, err := rt.db.CheckUserById(requestUser.ToDatabase())
+	dbrequestuser, err := rt.db.CheckUserById(requestUser.CovertForDatabase())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	requestUser.FromDatabase(dbrequestuser)
+	requestUser.ConvertForApplication(dbrequestuser)
 
 	// Recupera il parametro username dalla URL
 	username := ps.ByName("searchedusername")
@@ -37,7 +37,7 @@ func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httpro
 	// Converti i risultati del database in un formato adatto per il JSON
 	for _, dbuser := range dbusers {
 		var user User
-		user.FromDatabase(dbuser)
+		user.ConvertForApplication(dbuser)
 		userList = append(userList, user)
 	}
 

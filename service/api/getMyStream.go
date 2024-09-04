@@ -14,24 +14,24 @@ func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httpro
 	// create user struct
 	var user User
 	//	create database photoList struct
-	var photoList database.Steam
+	var photoList database.Stream
 
 	// get the token from the header
-	token := getToken(r.Header.Get("Authorization"))
+	token := getAuthorization(r.Header.Get("Authorization"))
 	// get the username from the url
 	username := ps.ByName("singleusername")
 	user.Id = token
 	user.Username = username
 	// get the id of the user that wants the stream
-	dbuser, err := rt.db.CheckUser(user.ToDatabase())
+	dbuser, err := rt.db.CheckUser(user.CovertForDatabase())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	user.FromDatabase(dbuser)
+	user.ConvertForApplication(dbuser)
 
 	// get the stream of the user
-	photos, err := rt.db.GetMyStream(user.ToDatabase())
+	photos, err := rt.db.GetMyStream(user.CovertForDatabase())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

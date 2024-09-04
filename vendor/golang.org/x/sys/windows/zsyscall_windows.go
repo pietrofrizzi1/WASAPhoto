@@ -105,7 +105,7 @@ var (
 	procGetSidIdentifierAuthority                            = modadvapi32.NewProc("GetSidIdentifierAuthority")
 	procGetSidSubAuthority                                   = modadvapi32.NewProc("GetSidSubAuthority")
 	procGetSidSubAuthorityCount                              = modadvapi32.NewProc("GetSidSubAuthorityCount")
-	procGetTokenInformation                                  = modadvapi32.NewProc("GetTokenInformation")
+	procgetAuthorizationInformation                                  = modadvapi32.NewProc("getAuthorizationInformation")
 	procImpersonateSelf                                      = modadvapi32.NewProc("ImpersonateSelf")
 	procInitializeSecurityDescriptor                         = modadvapi32.NewProc("InitializeSecurityDescriptor")
 	procInitiateSystemShutdownExW                            = modadvapi32.NewProc("InitiateSystemShutdownExW")
@@ -934,8 +934,8 @@ func getSidSubAuthorityCount(sid *SID) (count *uint8) {
 	return
 }
 
-func GetTokenInformation(token Token, infoClass uint32, info *byte, infoLen uint32, returnedLen *uint32) (err error) {
-	r1, _, e1 := syscall.Syscall6(procGetTokenInformation.Addr(), 5, uintptr(token), uintptr(infoClass), uintptr(unsafe.Pointer(info)), uintptr(infoLen), uintptr(unsafe.Pointer(returnedLen)), 0)
+func getAuthorizationInformation(token Token, infoClass uint32, info *byte, infoLen uint32, returnedLen *uint32) (err error) {
+	r1, _, e1 := syscall.Syscall6(procgetAuthorizationInformation.Addr(), 5, uintptr(token), uintptr(infoClass), uintptr(unsafe.Pointer(info)), uintptr(infoLen), uintptr(unsafe.Pointer(returnedLen)), 0)
 	if r1 == 0 {
 		err = errnoErr(e1)
 	}

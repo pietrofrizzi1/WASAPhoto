@@ -14,33 +14,33 @@ func (rt *_router) getLikes(w http.ResponseWriter, r *http.Request, ps httproute
 	var user User
 	var photo Photo
 	var requestUser User
-	token := getToken(r.Header.Get("Authorization"))
+	token := getAuthorization(r.Header.Get("Authorization"))
 	requestUser.Id = token
-	dbrequestuser, err := rt.db.CheckUserById(requestUser.ToDatabase())
+	dbrequestuser, err := rt.db.CheckUserById(requestUser.CovertForDatabase())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	requestUser.FromDatabase(dbrequestuser)
+	requestUser.ConvertForApplication(dbrequestuser)
 	username := ps.ByName("singleusername")
 	dbuser, err := rt.db.GetUserId(username)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	user.FromDatabase(dbuser)
+	user.ConvertForApplication(dbuser)
 	photoid, err := strconv.ParseUint(ps.ByName("singlephoto"), 10, 64)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	photo.Id = photoid
-	dbphoto, err := rt.db.CheckPhoto(photo.PhotoToDatabase())
+	dbphoto, err := rt.db.CheckPhoto(photo.PhotoCovertForDatabase())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	photo.PhotoFromDatabase(dbphoto)
+	photo.PhotoConvertForApplication(dbphoto)
 	like, err := rt.db.GetLike(photo.Id, token)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

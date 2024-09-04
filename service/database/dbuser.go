@@ -11,7 +11,7 @@ func (db *appdbimpl) CreateUser(u User) (User, error) {
 		var user User
 		if err := db.c.QueryRow(`SELECT id, username FROM users WHERE username = ?`, u.Username).Scan(&user.Id, &user.Username); err != nil {
 			if err == sql.ErrNoRows {
-				return user, ErrUserDoesNotExist
+				return user, ErrUserNotFound
 			}
 		}
 		return user, nil
@@ -42,7 +42,7 @@ func (db *appdbimpl) GetUserId(username string) (User, error) {
 	var user User
 	if err := db.c.QueryRow(`SELECT id, username FROM users WHERE username = ?`, username).Scan(&user.Id, &user.Username); err != nil {
 		if err == sql.ErrNoRows {
-			return user, ErrUserDoesNotExist
+			return user, ErrUserNotFound
 		}
 	}
 	return user, nil
@@ -52,7 +52,7 @@ func (db *appdbimpl) CheckUserByUsername(u User) (User, error) {
 	var user User
 	if err := db.c.QueryRow(`SELECT id, username FROM users WHERE username = ?`, u.Username).Scan(&user.Id, &user.Username); err != nil {
 		if err == sql.ErrNoRows {
-			return user, ErrUserDoesNotExist
+			return user, ErrUserNotFound
 		}
 	}
 	return user, nil
@@ -62,7 +62,7 @@ func (db *appdbimpl) CheckUserById(u User) (User, error) {
 	var user User
 	if err := db.c.QueryRow(`SELECT id, username FROM users WHERE id = ?`, u.Id).Scan(&user.Id, &user.Username); err != nil {
 		if err == sql.ErrNoRows {
-			return user, ErrUserDoesNotExist
+			return user, ErrUserNotFound
 		}
 	}
 	return user, nil
@@ -72,7 +72,7 @@ func (db *appdbimpl) CheckUser(u User) (User, error) {
 	var user User
 	if err := db.c.QueryRow(`SELECT id, username FROM users WHERE id = ? AND username = ?`, u.Id, u.Username).Scan(&user.Id, &user.Username); err != nil {
 		if err == sql.ErrNoRows {
-			return user, ErrUserDoesNotExist
+			return user, ErrUserNotFound
 		}
 	}
 	return user, nil
@@ -82,7 +82,7 @@ func (db *appdbimpl) GetMyStream(u User) ([]PhotoStream, error) {
 	var ret []PhotoStream
 	rows, err := db.c.Query(`SELECT Id, userId, photo, date FROM photos WHERE userId IN (SELECT followerId FROM followers WHERE userId=? AND followerId NOT IN (SELECT userId FROM bans WHERE bannedId=?))`, u.Id, u.Id)
 	if err != nil {
-		return ret, ErrUserDoesNotExist
+		return ret, ErrUserNotFound
 	}
 	defer func() { _ = rows.Close() }()
 	for rows.Next() {
@@ -171,7 +171,7 @@ func (db *appdbimpl) SearchUsersByUsername(username string) ([]User, error) {
 
 	// Se nessun utente è stato trovato, restituisci un errore
 	if len(users) == 0 {
-		return nil, ErrUserDoesNotExist
+		return nil, ErrUserNotFound
 	}
 
 	return users, nil

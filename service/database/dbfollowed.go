@@ -30,7 +30,7 @@ func (db *appdbimpl) GetFollowingId(user1 uint64, user2 uint64) (Follow, error) 
 	var follow Follow
 	if err := db.c.QueryRow(`SELECT Id, followerId, userId FROM followers WHERE followerId=? AND userId = ?`, user1, user2).Scan(&follow.FollowId, &follow.FollowedId, &follow.UserId); err != nil {
 		if err == sql.ErrNoRows {
-			return follow, ErrLikeDoesNotExist
+			return follow, ErrLikeNotFound
 		}
 	}
 	return follow, nil
@@ -40,7 +40,7 @@ func (db *appdbimpl) GetFollowers(u User, token uint64) (Follow, error) {
 	var follow Follow
 	if err := db.c.QueryRow(`SELECT Id, followerId, userId FROM followers WHERE followerId=? AND userId = ?`, u.Id, token).Scan(&follow.FollowId, &follow.FollowedId, &follow.UserId); err != nil {
 		if err == sql.ErrNoRows {
-			return follow, ErrLikeDoesNotExist
+			return follow, ErrLikeNotFound
 		}
 	}
 	return follow, nil
@@ -50,7 +50,7 @@ func (db *appdbimpl) GetFollowersCount(id uint64) (int, error) {
 	var count int
 	if err := db.c.QueryRow(`SELECT COUNT(*) FROM followers WHERE followerId = ?`, id).Scan(&count); err != nil {
 		if err == sql.ErrNoRows {
-			return count, ErrLikeDoesNotExist
+			return count, ErrLikeNotFound
 		}
 	}
 	return count, nil
@@ -60,7 +60,7 @@ func (db *appdbimpl) GetFollowingsCount(id uint64) (int, error) {
 	var count int
 	if err := db.c.QueryRow(`SELECT COUNT(*) FROM followers WHERE userId = ?`, id).Scan(&count); err != nil {
 		if err == sql.ErrNoRows {
-			return count, ErrLikeDoesNotExist
+			return count, ErrLikeNotFound
 		}
 	}
 	return count, nil

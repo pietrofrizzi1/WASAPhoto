@@ -19,7 +19,7 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	user.FromDatabase(dbuser)
+	user.ConvertForApplication(dbuser)
 	photoid, err := strconv.ParseUint(ps.ByName("singlephoto"), 10, 64)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -31,12 +31,12 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 	like.LikeId = likeid
-	token := getToken(r.Header.Get("Authorization"))
+	token := getAuthorization(r.Header.Get("Authorization"))
 	like.UserIdentifier = token
 	like.PhotoIdentifier = photoid
 	like.PhotoOwner = user.Id
-	err = rt.db.RemoveLike(like.LikeToDatabase())
-	if errors.Is(err, database.ErrLikeDoesNotExist) {
+	err = rt.db.RemoveLike(like.LikeCovertForDatabase())
+	if errors.Is(err, database.ErrLikeNotFound) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	} else if err != nil {

@@ -19,7 +19,7 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	user.FromDatabase(dbuser)
+	user.ConvertForApplication(dbuser)
 	id, err := strconv.ParseUint(ps.ByName("singlefolloweduser"), 10, 64)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -27,10 +27,10 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 	}
 	follow.FollowId = id
 	follow.FollowedId = user.Id
-	token := getToken(r.Header.Get("Authorization"))
+	token := getAuthorization(r.Header.Get("Authorization"))
 	follow.UserId = token
 	err = rt.db.RemoveFollow(follow.UserId, follow.FollowedId)
-	if errors.Is(err, database.ErrBanDoesNotExist) {
+	if errors.Is(err, database.ErrBanNotFound) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	} else if err != nil {

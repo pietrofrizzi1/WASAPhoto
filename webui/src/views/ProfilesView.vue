@@ -317,7 +317,7 @@ export default {
                 }
             }
         },
-        async deleteLike(username, id) {
+        async removeLike(username, id) {
             try {
                 let response = await this.$axios.get("/users/" + username + "/photos/" + id + "/likes", {
                     headers: {
@@ -405,8 +405,8 @@ export default {
                         </div>
                         <div class="form-group row">
                             <div class="col-md-6 mb-2">
-                                <button v-if="profile.followStatus == false" class="btn btn-outline-primary w-100" @click="followUser(profile.username)">Follow</button>
-                                <button v-if="profile.followStatus == true" class="btn btn-primary w-100" @click="unfollowUser(profile.username)">Unfollow</button>
+                                <button v-if="profile.followStatus == false" class="btn btn-outline-primary w-100 text-center" @click="followUser(profile.username)">Follow</button>
+                                <button v-if="profile.followStatus == true" class="btn btn-primary w-100 text-center" @click="unfollowUser(profile.username)">Unfollow</button>
                             </div>
                             <div class="col-md-6 mb-2">
                                 <button v-if="profile.banStatus == false" class="btn btn-outline-danger w-100" @click="banUser(profile.username)">Ban</button>
@@ -421,13 +421,12 @@ export default {
         <SuccessMsg v-if="successmsg" :msg="successmsg"></SuccessMsg>
         <ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
 
-        <LogModal id="logviewer" :log="photoComments" :token="token"></LogModal>
-
         <div v-if="profile.checkIfBanned == false" class="row">
-            <div class="col-md-4 col-sm-6 mb-4" v-for="photo in photoList.photos" :key="photo.id">
-                <div class="card h-100 shadow-sm">
+         <div class="photo-stream">
+            <div v-for="photo in photoList.photos" :key="photo.id">
+                <div class="card shadow-sm">
                     <img class="card-img-top" :src="photo.file" alt="Card image cap">
-                    <div class="card-body d-flex flex-column">
+                    <div class="card-body">
                         <RouterLink :to="'/users/' + profile.username + '/view'" class="nav-link">
                             <button type="button" class="btn btn-outline-primary mb-2">{{ profile.username }}</button>
                         </RouterLink>
@@ -442,17 +441,60 @@ export default {
                         </div>
                         <div class="d-flex justify-content-between align-items-center mt-2">
                             <button class="btn btn-dark" @click="openLog(profile.username, photo.id)">Comments</button>
+                            <Comments id="logviewer" :log="photoComments" :token="token"></Comments>
                             <button v-if="photo.likeStatus == false" class="btn btn-primary" @click="likePhoto(profile.username, photo.id)">Like</button>
-                            <button v-if="photo.likeStatus == true" class="btn btn-danger" @click="deleteLike(profile.username, photo.id)">Unlike</button>
+                            <button v-if="photo.likeStatus == true" class="btn btn-danger" @click="removeLike(profile.username, photo.id)">Unlike</button>
                         </div>
                     </div>
                 </div>
+             </div>
             </div>
+           
         </div>
+        
     </div>
 </template>
 
 
-<style>
+<style scoped>
+.container {
+  margin-top: 0;
+  padding: 0;
+  height: 100vh; /* Ocupa tutta l'altezza dello schermo */
+  
+  display: flex;
+  flex-direction: column;
+}
+
+.photo-stream {
+  flex: 1;
+  overflow-y: auto; /* Abilita lo scorrimento verticale */
+  display: flex;
+  flex-direction: column; /* Dispone le immagini in colonna */
+  padding: 10px;
+  gap: 20px; /* Spazio tra le foto */
+}
+
+
+
+/* Card and image styling */
+.card {
+  border: none;
+  margin: 0 auto; /* Centra la card orizzontalmente */
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  width: auto; /* Lascia che la larghezza si adatti al contenuto */
+  max-width: 90%; /* Limita la larghezza al 90% dello schermo */
+}
+
+.card-img-top {
+  object-fit: contain; /* L'immagine si adatta alla card mantenendo le proporzioni */
+  width: 100%; /* Assicura che l'immagine occupi tutta la larghezza della card */
+  height: auto; /* L'altezza si adatta alla proporzione dell'immagine */
+}
 
 </style>
