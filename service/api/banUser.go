@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-
 	"net/http"
 	"strconv"
 
@@ -10,50 +9,76 @@ import (
 	"github.com/pietrofrizzi1/WASAPhoto/service/api/reqcontext"
 )
 
-func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	var ban Ban
+// PROVARE QUESTAAAAAAAAAAA
+func (router *_router) banUser(w http.ResponseWriter, r *http.Request, params httprouter.Params, context reqcontext.RequestContext) {
+	// Estrarre e validare il token
+	authHeader := r.Header.Get("Authorization")
+	token := getToken(authHeader)
+
+	// Ottenere l'username dal percorso
+	username := params.ByName("singleusername")
+
+	// Recuperare i dati dell'utente
+	dbUser, err := router.db.GetUserId(username)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	var user User
-	token := getToken(r.Header.Get("Authorization"))
-	username := ps.ByName("singleusername")
-	dbuser, err := rt.db.GetUserId(username)
+	user.FromDatabase(dbUser)
+
+	// Estrarre e validare l'ID dell'utente bannato
+	bannedUserIDStr := params.ByName("singlebanneduser")
+	bannedUserID, err := strconv.ParseUint(bannedUserIDStr, 10, 64)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	user.FromDatabase(dbuser)
-	id, err := strconv.ParseUint(ps.ByName("singlebanneduser"), 10, 64)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	ban.BanId = id
+
+	// Creare un nuovo record di ban
+	var ban Ban
+	ban.BanId = bannedUserID
 	ban.BannedId = user.Id
 	ban.UserId = token
-	dbban, err := rt.db.CreateBan(ban.BanToDatabase())
+
+	dbBan, err := router.db.CreateBan(ban.BanToDatabase())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	ban.BanFromDatabase(dbban)
 
-	err = rt.db.RemoveComments(token, user.Id)
-	if err != nil {
+	ban.BanFromDatabase(dbBan)
+
+	// Rimuovere commenti e like associati all'utente bannato
+	if err := removeUserInteractions(router, token, user.Id); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = rt.db.RemoveLikes(token, user.Id)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	_, err = rt.db.GetFollowingId(token, user.Id)
-	if err == nil {
 
-		rt.db.RemoveFollow(token, user.Id)
-
+	// Rimuovere eventuali follow
+	if _, err := router.db.GetFollowingId(token, user.Id); err == nil {
+		if err := router.db.RemoveFollow(token, user.Id); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 
+	// Rispondere con il ban creato
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	_ = json.NewEncoder(w).Encode(ban)
+	if err := json.NewEncoder(w).Encode(ban); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+// removeUserInteractions rimuove commenti e like per un utente specifico
+func removeUserInteractions(router *_router, token uint64, userID uint64) error {
+	if err := router.db.RemoveComments(token, userID); err != nil {
+		return err
+	}
+	if err := router.db.RemoveLikes(token, userID); err != nil {
+		return err
+	}
+	return nil
 }

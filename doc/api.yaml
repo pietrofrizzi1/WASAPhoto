@@ -180,8 +180,7 @@ components:
         a photo
       type: string
       format: binary   
-      minLength: 1
-      maxLength: 3000
+
     
     commentid:
       title: commentid
@@ -432,7 +431,7 @@ paths:
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/profile'
+                  $ref: '#/components/schemas/numberoflikes'
           "400": { $ref: "#/components/responses/BadRequest" }
           "500": { $ref: "#/components/responses/InternalServerError" }
           "401": { $ref: "#/components/responses/Unauthorized" }
@@ -741,7 +740,7 @@ paths:
     /users/{singleusername}/search/{searchedusername}:
       parameters:
         - $ref : "#/components/parameters/singleusername"
-        - $ref : "#/components/parameters/searcheusername"
+        - $ref : "#/components/parameters/searchedusername"
       get: 
         security:
         - userAuthorization : []

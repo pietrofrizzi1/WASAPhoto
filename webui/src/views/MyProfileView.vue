@@ -1,8 +1,8 @@
 <script>
-import LogModal from "../components/Comments.vue";
+import Comments from "../components/Comments.vue";
 
 export default {
-    components: { LogModal },
+    components: { Comments },
     data: function () {
         return {
             errormsg: null,
@@ -321,14 +321,14 @@ export default {
         <!-- Sidebar -->
         <nav id="sidebarMenu" class="sidebar bg-light">
             <div class="position-sticky pt-3 sidebar-sticky">
-                <h6 class="sidebar-heading text-muted text-uppercase">General</h6>
+                
                 <ul class="nav flex-column">
                     <li class="nav-item">
                         <RouterLink to="/session" class="nav-link">
                             <svg class="feather">
-                                <use href="/feather-sprite-v4.29.0.svg#home" />
+                                <use href="/feather-sprite-v4.29.0.svg#image" />
                             </svg>
-                            Home
+                            Stream
                         </RouterLink>
                     </li>
                     <li class="nav-item">
@@ -381,9 +381,7 @@ export default {
                         <div class="photo-card" v-for="photo in photoList.photos" :key="photo.id">
                             <img class="photo-image" :src="photo.file" alt="Photo">
                             <div class="photo-info">
-                                <RouterLink :to="'/users/' + profile.username + '/profile'" class="username-link">
-                                    <button class="btn btn-outline-primary">{{ profile.username }}</button>
-                                </RouterLink>
+                                
                                 <p class="photo-date">Photo uploaded on {{ photo.date }}</p>
                                 <p class="photo-likes">Likes: {{ photo.likesCount }}</p>
                                 <p class="photo-comments">Comments: {{ photo.commentsCount }}</p>
@@ -404,7 +402,7 @@ export default {
                     </div>
 
                     <!-- Log Modal -->
-                    <LogModal id="logviewer" :log="photoComments" :token="token"></LogModal>
+                    <Comments id="logviewer" :log="photoComments" :token="token"></Comments>
                 </div>
             </div>
         </div>

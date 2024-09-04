@@ -1,9 +1,9 @@
 <script>
-import LogModal from "../components/Comments.vue";
+import Comments from "../components/Comments.vue";
 import SuccessMsg from "../components/SuccessMsg.vue";
 
 export default {
-	components: { LogModal, SuccessMsg },
+	components: { Comments, SuccessMsg },
 	data: function () {
 		return {
 			errormsg: null,
@@ -240,8 +240,10 @@ export default {
 	<div class="container">
 	  <!-- Sidebar -->
 	  
+	  
 	
 	  <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+		
 		<div class="position-sticky pt-3 sidebar-sticky">
 		  <ul class="nav flex-column">
 			<li class="nav-item">
@@ -268,10 +270,6 @@ export default {
 		<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 		  <h1 class="h2">{{ username }}'s stream</h1>
 		  <div class="btn-toolbar mb-2 mb-md-0">
-			<div class="btn-group me-2">
-			  <button class="btn btn-danger" type="button" @click="doLogout">Logout</button>
-			  <button class="btn btn-primary" type="button" @click="ViewProfile">Profile</button>
-			</div>
 		  </div>
 		</div>
   
@@ -319,7 +317,7 @@ export default {
 	  </div>
   
 	  <!-- Modal -->
-	  <LogModal id="logviewer" :log="photoComments" :token="token"></LogModal>
+	  <Comments id="logviewer" :log="photoComments" :token="token"></Comments>
 	</div>
 </template>
 
@@ -367,7 +365,7 @@ export default {
 	color: #155724;
 }
 
-/* Responsive adjustments */
+
 @media (max-width: 767px) {
 	.col-md-9 {
 	  padding: 0;

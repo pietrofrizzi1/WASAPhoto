@@ -4,14 +4,14 @@
 
 <nav id="sidebarMenu" class="sidebar bg-light">
             <div class="position-sticky pt-3 sidebar-sticky">
-                <h6 class="sidebar-heading text-muted text-uppercase">General</h6>
+                
                 <ul class="nav flex-column">
                     <li class="nav-item">
                         <RouterLink to="/session" class="nav-link">
                             <svg class="feather">
-                                <use href="/feather-sprite-v4.29.0.svg#home" />
+                                <use href="/feather-sprite-v4.29.0.svg#image" />
                             </svg>
-                            Home
+                            Stream
                         </RouterLink>
                     </li>
                     <li class="nav-item">

@@ -1,8 +1,8 @@
 <script>
-import LogModal from "../components/Comments.vue";
+import Comments from "../components/Comments.vue";
 
 export default {
-    components: { LogModal },
+    components: { Comments },
     data: function () {
         return {
             errormsg: null,
@@ -370,42 +370,31 @@ export default {
 <template>
     <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
         <div class="position-sticky pt-3 sidebar-sticky">
-            <h6
-                class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
-                <span>General</span>
-            </h6>
             <ul class="nav flex-column">
                 <li class="nav-item">
                     <RouterLink to="/session" class="nav-link">
                         <svg class="feather">
-                            <use href="/feather-sprite-v4.29.0.svg#home" />
+                            <use href="/feather-sprite-v4.29.0.svg#image" />
                         </svg>
-                        Home
+                        Stream
                     </RouterLink>
                 </li>
             </ul>
         </div>
     </nav>
-    <div class=" ms-sm-auto col-lg-10 px-4">
+    <div class="ms-sm-auto col-lg-10 px-4">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 "
-                v-if="profile.checkIfBanned == true">
-                <div class="alert alert-danger " role="alert">
-                    <h4 class="alert-heading">{{ profile.username }} has banned you</h4>
-                    
-                    <hr>
-                    
-                </div>
-
+            <div v-if="profile.checkIfBanned == true" class="alert alert-danger w-100 mb-3" role="alert">
+                <h4 class="alert-heading">{{ profile.username }} has banned you</h4>
+                <hr>
             </div>
 
-            <div>
-                <div
-                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-                    <h1 class="h2">Profile of {{ profile.username }} </h1>
-                    <div v-if="profile.checkIfBanned == false" class="p-4 text-black">
-                        <div class="d-flex justify-content-end text-center py-1">
-                            <div>
+            <div v-if="profile.checkIfBanned == false" class="w-100">
+                <div class="d-flex justify-content-between flex-wrap align-items-center mb-3">
+                    <h1 class="h2">Profile of {{ profile.username }}</h1>
+                    <div class="text-center">
+                        <div class="d-flex justify-content-end mb-2">
+                            <div class="px-3">
                                 <p class="mb-1 h5">{{ profile.followersCount }}</p>
                                 <p class="small text-muted mb-0">Followers</p>
                             </div>
@@ -414,64 +403,14 @@ export default {
                                 <p class="small text-muted mb-0">Followings</p>
                             </div>
                         </div>
-                    </div>
-                    <div class="form-group row ">
-                        <div class="col-md-6">
-                            <button type="button" v-if="profile.followStatus == false" class="btn btn-outline-primary "
-                                @click="followUser(profile.username)">Follow </button>
-                            <button type="button" v-if="profile.followStatus == true" class="btn btn-primary "
-                                @click="unfollowUser(profile.username)">Unfollow </button>
-                        </div>
-                        <div class="col-md-6">
-                            <button type="button" v-if="profile.banStatus == false" class="btn btn-outline-danger"
-                                @click="banUser(profile.username)">Ban </button>
-                            <button type="button" v-if="profile.banStatus == true" class="btn btn-outline-danger"
-                                @click="unbanUser(profile.username)">Unban</button>
-                        </div>
-                    </div>
-                </div>
-
-                <SuccessMsg v-if="successmsg" :msg="successmsg"></SuccessMsg>
-                <ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
-
-                <LogModal id="logviewer" :log="photoComments" :token="token"></LogModal>
-                <div v-if="profile.checkIfBanned == false" class="row">
-                    <div class="col-md-4" v-for="photo in photoList.photos" :key="photo.id">
-                        <div class="card mb-4 shadow-sm">
-                            <img class="card-img-top" :src=photo.file alt="Card image cap">
-                            <div class="card-body">
-                                <RouterLink :to="'/users/' + profile.username + '/view'" class="nav-link">
-                                    <button type="button" class="btn btn-outline-primary">{{ profile.username }}</button>
-                                </RouterLink>
-                                <div
-                                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <p class="card-text">Likes : {{ photo.likesCount }}</p>
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <p class="card-text">Comments : {{ photo.commentsCount }}</p>
-                                </div>
-                                <p class="card-text">Uploaded on : {{ photo.date }}</p>
-                                <div class="input-group mb-3">
-                                    <input type="text" id="comment" v-model="photo.comment" class="form-control"
-                                        placeholder="Comment!" aria-label="Recipient's username"
-                                        aria-describedby="basic-addon2">
-                                    <div class="input-group-append">
-                                        <button class="btn btn-primary" type="button"
-                                            @click="sendComment(profile.username, photo.id, photo.comment)">Send</button>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-dark"
-                                            @click="openLog(profile.username, photo.id)">Comments</button>
-                                        <button type="button" v-if="photo.likeStatus == false" class="btn btn-primary"
-                                            @click="likePhoto(profile.username, photo.id)">Like</button>
-                                        <button type="button" v-if="photo.likeStatus == true" class="btn btn-danger"
-                                            @click="deleteLike(profile.username, photo.id)">Unlike</button>
-                                    </div>
-                                </div>
+                        <div class="form-group row">
+                            <div class="col-md-6 mb-2">
+                                <button v-if="profile.followStatus == false" class="btn btn-outline-primary w-100" @click="followUser(profile.username)">Follow</button>
+                                <button v-if="profile.followStatus == true" class="btn btn-primary w-100" @click="unfollowUser(profile.username)">Unfollow</button>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <button v-if="profile.banStatus == false" class="btn btn-outline-danger w-100" @click="banUser(profile.username)">Ban</button>
+                                <button v-if="profile.banStatus == true" class="btn btn-danger w-100" @click="unbanUser(profile.username)">Unban</button>
                             </div>
                         </div>
                     </div>
@@ -479,9 +418,40 @@ export default {
             </div>
         </div>
 
-    </div>
+        <SuccessMsg v-if="successmsg" :msg="successmsg"></SuccessMsg>
+        <ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
 
+        <LogModal id="logviewer" :log="photoComments" :token="token"></LogModal>
+
+        <div v-if="profile.checkIfBanned == false" class="row">
+            <div class="col-md-4 col-sm-6 mb-4" v-for="photo in photoList.photos" :key="photo.id">
+                <div class="card h-100 shadow-sm">
+                    <img class="card-img-top" :src="photo.file" alt="Card image cap">
+                    <div class="card-body d-flex flex-column">
+                        <RouterLink :to="'/users/' + profile.username + '/view'" class="nav-link">
+                            <button type="button" class="btn btn-outline-primary mb-2">{{ profile.username }}</button>
+                        </RouterLink>
+                        <div class="d-flex justify-content-between mb-2">
+                            <p class="card-text">Likes: {{ photo.likesCount }}</p>
+                            <p class="card-text">Comments: {{ photo.commentsCount }}</p>
+                        </div>
+                        <p class="card-text mb-2">Uploaded on: {{ photo.date }}</p>
+                        <div class="input-group">
+                            <input type="text" v-model="photo.comment" class="form-control" placeholder="Comment!" aria-label="Comment">
+                            <button class="btn btn-primary" @click="sendComment(profile.username, photo.id, photo.comment)">Send</button>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <button class="btn btn-dark" @click="openLog(profile.username, photo.id)">Comments</button>
+                            <button v-if="photo.likeStatus == false" class="btn btn-primary" @click="likePhoto(profile.username, photo.id)">Like</button>
+                            <button v-if="photo.likeStatus == true" class="btn btn-danger" @click="deleteLike(profile.username, photo.id)">Unlike</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
+
 
 <style>
 
