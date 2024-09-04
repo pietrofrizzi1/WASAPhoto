@@ -10,7 +10,6 @@ type Profile struct {
 	Username       string `json:"username"`
 	FollowersCount int    `json:"followersCount"`
 	FollowingCount int    `json:"followingCount"`
-	PhotoCount     int    `json:"photoCount"`
 	FollowStatus   bool   `json:"followStatus"`
 	BanStatus      bool   `json:"banStatus"`
 	CheckIfBanned  bool   `json:"checkIfBanned"`

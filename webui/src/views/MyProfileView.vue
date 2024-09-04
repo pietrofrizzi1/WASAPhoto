@@ -302,6 +302,11 @@ export default {
                 }
             }
         },
+        async doLogout() {
+			localStorage.removeItem("token")
+			localStorage.removeItem("username")
+			this.$router.push({ path: '/' })
+		},
     },
     mounted() {
         this.userProfile()
@@ -325,6 +330,14 @@ export default {
                             </svg>
                             Home
                         </RouterLink>
+                    </li>
+                    <li class="nav-item">
+                      <div class="nav-link" @click="doLogout">
+                         <svg class="feather">
+                          <use href="/feather-sprite-v4.29.0.svg#log-out" />
+                         </svg>
+                         Logout
+                      </div>
                     </li>
                 </ul>
             </div>

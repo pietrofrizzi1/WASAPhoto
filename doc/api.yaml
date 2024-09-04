@@ -717,3 +717,27 @@ paths:
           "403": { $ref: "#/components/responses/Forbidden" }
     
 
+    /users/{singleusername}/search/{searchedusername}:
+      parameters:
+        - $ref : "#/components/parameters/singleusername"
+      get: 
+        security:
+        - userAuthorization : []
+        tags: ["Users"]
+        summary: retrive users with a similar username
+        operationId: searchUsers
+        responses:
+          "200":
+            description: |
+              users retrived
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/profile'
+          "400": { $ref: "#/components/responses/BadRequest" }
+          "500": { $ref: "#/components/responses/InternalServerError" }
+          "401": { $ref: "#/components/responses/Unauthorized" }
+          "403": { $ref: "#/components/responses/Forbidden" }
+
+
+aggiungere lista di foto, numero di likes

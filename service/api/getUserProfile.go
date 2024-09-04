@@ -42,12 +42,6 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 	profile.FollowingCount = followingCount
-	photoCount, err := rt.db.GetPhotosCount(user.Id)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	profile.PhotoCount = photoCount
 	profile.BanStatus, err = rt.db.GetBanStatus(requestUser.Id, user.Id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

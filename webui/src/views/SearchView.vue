@@ -1,4 +1,37 @@
+
 <template>
+ <button @click="toggleSidebar" class="hamburger-btn">
+    <svg width="30" height="30" viewBox="0 0 30 30">
+        <rect width="30" height="5"></rect>
+        <rect y="12" width="30" height="5"></rect>
+        <rect y="24" width="30" height="5"></rect>
+    </svg>
+ </button>
+  <nav id="sidebarMenu" class="sidebar bg-light" v-if="isSidebarOpen">
+    <div class="position-sticky pt-3 sidebar-sticky">
+        <h6 class="sidebar-heading text-muted text-uppercase">General</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <RouterLink to="/session" class="nav-link">
+                    <svg class="feather">
+                        <use href="/feather-sprite-v4.29.0.svg#home" />
+                    </svg>
+                    Home
+                </RouterLink>
+            </li>
+            <li class="nav-item">
+            <div class="nav-link" @click="doLogout">
+              <svg class="feather">
+                <use href="/feather-sprite-v4.29.0.svg#log-out" />
+              </svg>
+              Logout
+            </div>
+          </li>
+        </ul>
+    </div>
+  </nav>
+
+
   <div class="search-container">
     <h1>Risultati della ricerca</h1>
     <p v-if="query">Mostrando i risultati per: {{ query }}</p>
@@ -13,7 +46,7 @@
     
     <!-- Mostra i risultati della ricerca -->
     <ul class="list-group" v-if="users.length">
-      <li class="list-group-item" v-for="user in users" :key="user.id">
+      <li class="list-group-item" v-for="user in users" :key="user.id" @click="loaduserprofile(user.username)">
         {{ user.username }}
       </li>
     </ul>
@@ -34,7 +67,8 @@ export default {
 			token: localStorage.getItem('token'),
       users: [],    // Array per memorizzare i risultati della ricerca
       loading: false,  // Stato di caricamento
-      error: null    // Stato di errore
+      error: null,
+      isSidebarOpen: false, 
     };
   },
   watch: {
@@ -69,13 +103,45 @@ export default {
       } finally {
         this.loading = false;
       }
-    }
+    },
+    async loaduserprofile(user) {
+      this.$router.push({ path: '/users/' + user + '/view' })
+    
+    },
+    toggleSidebar() {
+      this.isSidebarOpen = !this.isSidebarOpen;
+    },
+    async doLogout() {
+			localStorage.removeItem("token")
+			localStorage.removeItem("username")
+			this.$router.push({ path: '/' })
+		},
   }
 };
 </script>
 
 <style scoped>
-/* Aggiunta dello stile */
+.hamburger-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+}
+
+.hamburger-btn span {
+  display: block;
+  width: 100%;
+  height: 3px;
+  background-color: black; 
+  border-radius: 2px;
+  transition: background-color 0.3s;
+}
+
 .search-container {
   margin-top: 20px;
   max-width: 800px;

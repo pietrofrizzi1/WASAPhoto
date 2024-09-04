@@ -412,10 +412,6 @@ export default {
                         <p class="mb-1 h5">{{ profile.followingCount }}</p>
                         <p class="small text-muted mb-0">Followings</p>
                     </div>
-                    <div>
-                        <p class="mb-1 h5">{{ profile.photoCount }}</p>
-                        <p class="small text-muted mb-0">Photos</p>
-                    </div>
                 </div>
             </div>
             <div class="form-group row ">

@@ -96,34 +96,6 @@ export default {
 				}
 			}
 		},
-		async SearchUser() {
-			if (this.searchUserUsername === this.username) {
-				this.errormsg = "You can't search yourself."
-			} else if (this.searchUserUsername === "") {
-				this.errormsg = "Emtpy username field."
-			} else {
-				try {
-					let response = await this.$axios.get("users/" + this.searchUserUsername + "/profile", {
-						headers: {
-							Authorization: "Bearer " + localStorage.getItem("token")
-						}
-					})
-					this.profile = response.data
-					this.$router.push({ path: '/users/' + this.searchUserUsername + '/view' })
-				} catch (e) {
-					if (e.response && e.response.status === 400) {
-						this.errormsg = "Form error, please check all fields and try again. If you think that this is an error, write an e-mail to us.";
-						this.detailedmsg = null;
-					} else if (e.response && e.response.status === 500) {
-						this.errormsg = "User does not exist on WASAPhoto.";
-						this.detailedmsg = e.toString();
-					} else {
-						this.errormsg = e.toString();
-						this.detailedmsg = null;
-					}
-				}
-			}
-		},
 		async sendComment(username, photoid, comment) {
 			if (comment === "") {
 				this.errormsg = "Emtpy comment field."
@@ -245,13 +217,13 @@ export default {
 		async ViewProfile() {
 			this.$router.push({ path: '/users/' + this.username + '/profile' })
 		},
-		async SearchUser2(){
-			if (this.searchUserUsername === this.username) {
-				this.errormsg = "You can't search yourself."
-			} else if (this.searchUserUsername === "") {
+		async SearchUser(){
+			
+			if (this.searchUserUsername === "") {
+
 				this.errormsg = "Emtpy username field."
 			} else {
-			   //+ this.searchUserUsername
+			   
 			   
 			   this.$router.push({ path: '/users/'+this.username+'/search', query: { q: this.searchUserUsername } })
 
@@ -306,7 +278,7 @@ export default {
 		<!-- Search User -->
 		<div class="input-group mb-3">
 		  <input type="text" v-model="searchUserUsername" class="form-control" placeholder="Search a user in WASAPhoto">
-		  <button class="btn btn-primary" type="button" @click="SearchUser2">Search</button>
+		  <button class="btn btn-primary" type="button" @click="SearchUser">Search</button>
 		</div>
   
 		<!-- Error and Success Messages -->
