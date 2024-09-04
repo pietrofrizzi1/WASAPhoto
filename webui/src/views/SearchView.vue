@@ -1,59 +1,62 @@
 
 <template>
- <button @click="toggleSidebar" class="hamburger-btn">
-    <svg width="30" height="30" viewBox="0 0 30 30">
-        <rect width="30" height="5"></rect>
-        <rect y="12" width="30" height="5"></rect>
-        <rect y="24" width="30" height="5"></rect>
-    </svg>
- </button>
-  <nav id="sidebarMenu" class="sidebar bg-light" v-if="isSidebarOpen">
-    <div class="position-sticky pt-3 sidebar-sticky">
-        <h6 class="sidebar-heading text-muted text-uppercase">General</h6>
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <RouterLink to="/session" class="nav-link">
-                    <svg class="feather">
-                        <use href="/feather-sprite-v4.29.0.svg#home" />
-                    </svg>
-                    Home
-                </RouterLink>
-            </li>
-            <li class="nav-item">
-            <div class="nav-link" @click="doLogout">
-              <svg class="feather">
-                <use href="/feather-sprite-v4.29.0.svg#log-out" />
-              </svg>
-              Logout
+
+
+<nav id="sidebarMenu" class="sidebar bg-light">
+            <div class="position-sticky pt-3 sidebar-sticky">
+                <h6 class="sidebar-heading text-muted text-uppercase">General</h6>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <RouterLink to="/session" class="nav-link">
+                            <svg class="feather">
+                                <use href="/feather-sprite-v4.29.0.svg#home" />
+                            </svg>
+                            Home
+                        </RouterLink>
+                    </li>
+                    <li class="nav-item">
+                      <div class="nav-link" @click="doLogout">
+                         <svg class="feather">
+                          <use href="/feather-sprite-v4.29.0.svg#log-out" />
+                         </svg>
+                         Logout
+                      </div>
+                    </li>
+                </ul>
             </div>
-          </li>
-        </ul>
-    </div>
-  </nav>
+</nav>
+
+        <!-- Main content -->
+          <div class="col-md-9 ms-sm-auto col-lg-10 px-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
 
 
-  <div class="search-container">
-    <h1>Risultati della ricerca</h1>
-    <p v-if="query">Mostrando i risultati per: {{ query }}</p>
-    
-    <!-- Mostra un messaggio di caricamento durante la ricerca -->
-    <div v-if="loading" class="spinner-border" role="status">
-      <span class="sr-only">Caricamento...</span>
-    </div>
-    
-    <!-- Mostra un messaggio di errore se c'è un problema -->
-    <div v-if="error" class="alert alert-danger">{{ error }}</div>
-    
-    <!-- Mostra i risultati della ricerca -->
-    <ul class="list-group" v-if="users.length">
-      <li class="list-group-item" v-for="user in users" :key="user.id" @click="loaduserprofile(user.username)">
-        {{ user.username }}
-      </li>
-    </ul>
-    
-    <!-- Mostra un messaggio se non ci sono risultati -->
-    <p v-if="!loading && !users.length && query">Nessun risultato trovato per "{{ query }}"</p>
-  </div>
+
+              <div class="search-container">
+                <h1>Risultati della ricerca</h1>
+                <p v-if="query">Mostrando i risultati per: {{ query }}</p>
+                
+                <!-- Mostra un messaggio di caricamento durante la ricerca -->
+                <div v-if="loading" class="spinner-border" role="status">
+                  <span class="sr-only">Caricamento...</span>
+                </div>
+                
+                <!-- Mostra un messaggio di errore se c'è un problema -->
+                <div v-if="error" class="alert alert-danger">{{ error }}</div>
+                
+                <!-- Mostra i risultati della ricerca -->
+                <ul class="list-group" v-if="users.length">
+                  <li class="list-group-item" v-for="user in users" :key="user.id" @click="loaduserprofile(user.username)">
+                    {{ user.username }}
+                  </li>
+                </ul>
+                
+                <!-- Mostra un messaggio se non ci sono risultati -->
+                <p v-if="!loading && !users.length && query">Nessun risultato trovato per "{{ query }}"</p>
+              </div>
+            </div>
+          </div>
+            
 </template>
 
 <script>
@@ -68,7 +71,7 @@ export default {
       users: [],    // Array per memorizzare i risultati della ricerca
       loading: false,  // Stato di caricamento
       error: null,
-      isSidebarOpen: false, 
+       
     };
   },
   watch: {
@@ -107,9 +110,6 @@ export default {
     async loaduserprofile(user) {
       this.$router.push({ path: '/users/' + user + '/view' })
     
-    },
-    toggleSidebar() {
-      this.isSidebarOpen = !this.isSidebarOpen;
     },
     async doLogout() {
 			localStorage.removeItem("token")

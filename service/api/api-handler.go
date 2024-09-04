@@ -33,8 +33,6 @@ func (rt *_router) Handler() http.Handler {
 
 	rt.router.GET("/users/:singleusername/followed", rt.wrap(rt.getFollowers))
 
-	rt.router.GET("/users/:singleusername/photos/:singlephoto/likes", rt.wrap(rt.getLikes))
-
 	rt.router.GET("/users/:singleusername/photos/:singlephoto/comments", rt.wrap(rt.getComments))
 
 	rt.router.GET("/users/:singleusername/search/:searchedusername", rt.wrap(rt.searchUsers))

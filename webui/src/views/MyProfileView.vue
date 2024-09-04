@@ -1,5 +1,5 @@
 <script>
-import LogModal from "../components/Logmodal.vue";
+import LogModal from "../components/Comments.vue";
 
 export default {
     components: { LogModal },
@@ -344,65 +344,69 @@ export default {
         </nav>
 
         <!-- Main content -->
-        <div class="main-content">
-            <header class="profile-header">
-                <h1 class="profile-username">{{ profile.username }}</h1>
-                <div class="profile-stats">
-                    <div class="stat-item">
-                        <p class="stat-value">{{ profile.followersCount }}</p>
-                        <p class="stat-label">Followers</p>
-                    </div>
-                    <div class="stat-item">
-                        <p class="stat-value">{{ profile.followingCount }}</p>
-                        <p class="stat-label">Following</p>
-                    </div>
-                </div>
-            </header>
-
-            <!-- Change Username -->
-            <div class="username-change">
-                <input type="text" id="newUsername" v-model="newUsername" class="form-control" placeholder="Insert a new username for your profile...">
-                <button class="btn btn-success" @click="changeName">Change username</button>
-            </div>
-
-            <!-- Photo Upload Section - Styled Like Username Change -->
-            <div class="photo-upload">
-                <input type="file" accept="image/*" class="form-control" @change="uploadFile" ref="file" placeholder="No image selected">
-                <button class="btn btn-primary mt-2" @click="submitFile">Upload Photo</button>
-            </div>
-
-            <!-- Error Message -->
-            <ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
-
-            <!-- Photo Grid -->
-            <div class="photo-grid">
-                <div class="photo-card" v-for="photo in photoList.photos" :key="photo.id">
-                    <img class="photo-image" :src="photo.file" alt="Photo">
-                    <div class="photo-info">
-                        <RouterLink :to="'/users/' + profile.username + '/profile'" class="username-link">
-                            <button class="btn btn-outline-primary">{{ profile.username }}</button>
-                        </RouterLink>
-                        <p class="photo-date">Photo uploaded on {{ photo.date }}</p>
-                        <p class="photo-likes">Likes: {{ photo.likesCount }}</p>
-                        <p class="photo-comments">Comments: {{ photo.commentsCount }}</p>
-                        
-                        <div class="comment-section">
-                            <input type="text" id="comment" v-model="photo.comment" class="form-control" placeholder="Comment!">
-                            <button class="btn btn-primary" @click="sendComment(username, photo.id, photo.comment)">Send</button>
+        <div class="col-md-9 ms-sm-auto col-lg-10 px-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <div class="main-content">
+                    <header class="profile-header">
+                        <h1 class="profile-username">{{ profile.username }}</h1>
+                        <div class="profile-stats">
+                            <div class="stat-item">
+                                <p class="stat-value">{{ profile.followersCount }}</p>
+                                <p class="stat-label">Followers</p>
+                            </div>
+                            <div class="stat-item">
+                                <p class="stat-value">{{ profile.followingCount }}</p>
+                                <p class="stat-label">Following</p>
+                            </div>
                         </div>
+                    </header>
 
-                        <div class="photo-actions">
-                            <button class="btn btn-dark" @click="openLog(username, photo.id)">Comments</button>
-                            <button v-if="photo.likeStatus === false" class="btn btn-primary" @click="likePhoto(username, photo.id)">Like</button>
-                            <button v-if="photo.likeStatus === true" class="btn btn-danger" @click="deleteLike(username, photo.id)">Unlike</button>
-                            <button class="btn btn-outline-danger" @click="deletePhoto(photo.id)">Delete</button>
+                    <!-- Change Username -->
+                    <div class="username-change">
+                        <input type="text" id="newUsername" v-model="newUsername" class="form-control" placeholder="Insert a new username for your profile...">
+                        <button class="btn btn-success" @click="changeName">Change username</button>
+                    </div>
+
+                    <!-- Photo Upload Section - Styled Like Username Change -->
+                    <div class="photo-upload">
+                        <input type="file" accept="image/*" class="form-control" @change="uploadFile" ref="file" placeholder="No image selected">
+                        <button class="btn btn-primary mt-2" @click="submitFile">Upload Photo</button>
+                    </div>
+
+                    <!-- Error Message -->
+                    <ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
+
+                    <!-- Photo Grid -->
+                    <div class="photo-grid">
+                        <div class="photo-card" v-for="photo in photoList.photos" :key="photo.id">
+                            <img class="photo-image" :src="photo.file" alt="Photo">
+                            <div class="photo-info">
+                                <RouterLink :to="'/users/' + profile.username + '/profile'" class="username-link">
+                                    <button class="btn btn-outline-primary">{{ profile.username }}</button>
+                                </RouterLink>
+                                <p class="photo-date">Photo uploaded on {{ photo.date }}</p>
+                                <p class="photo-likes">Likes: {{ photo.likesCount }}</p>
+                                <p class="photo-comments">Comments: {{ photo.commentsCount }}</p>
+                                
+                                <div class="comment-section">
+                                    <input type="text" id="comment" v-model="photo.comment" class="form-control" placeholder="Comment!">
+                                    <button class="btn btn-primary" @click="sendComment(username, photo.id, photo.comment)">Send</button>
+                                </div>
+
+                                <div class="photo-actions">
+                                    <button class="btn btn-dark" @click="openLog(username, photo.id)">Comments</button>
+                                    <button v-if="photo.likeStatus === false" class="btn btn-primary" @click="likePhoto(username, photo.id)">Like</button>
+                                    <button v-if="photo.likeStatus === true" class="btn btn-danger" @click="deleteLike(username, photo.id)">Unlike</button>
+                                    <button class="btn btn-outline-danger" @click="deletePhoto(photo.id)">Delete</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Log Modal -->
+                    <LogModal id="logviewer" :log="photoComments" :token="token"></LogModal>
                 </div>
             </div>
-
-            <!-- Log Modal -->
-            <LogModal id="logviewer" :log="photoComments" :token="token"></LogModal>
         </div>
     </div>
 </template>
