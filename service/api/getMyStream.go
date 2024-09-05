@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -10,40 +9,36 @@ import (
 )
 
 func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-
-	// create user struct
 	var user User
-	//	create database photoList struct
 	var photoList database.Stream
 
-	// get the token from the header
-	token := getAuthorization(r.Header.Get("Authorization"))
-	// get the username from the url
+	// Estrai il token usando extractToken
+	token := extractToken(r.Header.Get("Authorization"))
+
+	// Imposta l'ID e il nome utente dell'utente
 	username := ps.ByName("singleusername")
 	user.Id = token
 	user.Username = username
-	// get the id of the user that wants the stream
+
+	// Controlla se l'utente esiste nel database
 	dbuser, err := rt.db.CheckUser(user.ConvertForDatabase())
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handleError(w, err) // Gestione dell'errore
 		return
 	}
 	user.ConvertForApplication(dbuser)
 
-	// get the stream of the user
+	// Ottieni lo stream dell'utente
 	photos, err := rt.db.GetMyStream(user.ConvertForDatabase())
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handleError(w, err) // Gestione dell'errore
 		return
 	}
 
-	// set the id of the user that wants the stream
+	// Imposta l'ID dell'utente e le foto nello stream
 	photoList.Identifier = token
-	// set the photos to the stream
 	photoList.Photos = photos
 
-	// set the header and return the stream
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	_ = json.NewEncoder(w).Encode(photoList)
+	// Rispondi con JSON usando respondWithJSON
+	respondWithJSON(w, http.StatusOK, photoList)
 }

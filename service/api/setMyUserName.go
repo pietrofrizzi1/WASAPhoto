@@ -11,20 +11,25 @@ import (
 func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var user User
 	username := ps.ByName("singleusername")
-	err := json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+
+	// Decodifica il corpo della richiesta
+	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		handleError(w, err) // Gestione dell'errore
 		return
 	}
-	token := getAuthorization(r.Header.Get("Authorization"))
+
+	// Estrai il token usando extractToken
+	token := extractToken(r.Header.Get("Authorization"))
 	user.Id = token
+
+	// Imposta il nome utente nel database
 	dbuser, err := rt.db.SetUsername(user.ConvertForDatabase(), username)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handleError(w, err) // Gestione dell'errore
 		return
 	}
 	user.ConvertForApplication(dbuser)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	_ = json.NewEncoder(w).Encode(user)
+
+	// Rispondi con JSON usando respondWithJSON
+	respondWithJSON(w, http.StatusCreated, user)
 }

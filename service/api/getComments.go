@@ -1,9 +1,7 @@
 package api
 
 import (
-	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/pietrofrizzi1/WASAPhoto/service/api/reqcontext"
@@ -15,42 +13,57 @@ func (rt *_router) getComments(w http.ResponseWriter, r *http.Request, ps httpro
 	var requestUser User
 	var photo Photo
 	var commentList database.Comments
-	token := getAuthorization(r.Header.Get("Authorization"))
+
+	// Estrai il token usando extractToken
+	token := extractToken(r.Header.Get("Authorization"))
 	requestUser.Id = token
+
+	// Controlla se l'utente esiste nel database
 	dbrequestuser, err := rt.db.CheckUserById(requestUser.ConvertForDatabase())
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handleError(w, err) // Gestione dell'errore
 		return
 	}
 	requestUser.ConvertForApplication(dbrequestuser)
-	photoid, err := strconv.ParseUint(ps.ByName("singlephoto"), 10, 64)
+
+	// Estrai l'ID della foto
+	photoid, err := parseUserID(ps.ByName("singlephoto")) // Usa parseUserID per l'ID della foto
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handleError(w, err) // Gestione dell'errore
 		return
 	}
 	photo.Id = photoid
+
+	// Controlla se la foto esiste nel database
 	dbphoto, err := rt.db.CheckPhoto(photo.PhotoConvertForDatabase())
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handleError(w, err) // Gestione dell'errore
 		return
 	}
 	photo.PhotoConvertForApplication(dbphoto)
+
+	// Recupera l'utente tramite username
 	username := ps.ByName("singleusername")
 	dbuser, err := rt.db.GetUserId(username)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handleError(w, err) // Gestione dell'errore
 		return
 	}
 	user.ConvertForApplication(dbuser)
+
+	// Recupera i commenti della foto
 	comments, err := rt.db.GetComments(photo.Id)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handleError(w, err) // Gestione dell'errore
 		return
 	}
+
+	// Imposta i dettagli della lista dei commenti
 	commentList.RequestIdentifier = requestUser.Id
 	commentList.PhotoIdentifier = photo.Id
 	commentList.PhotoOwner = user.Id
 	commentList.Comments = comments
-	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(commentList)
+
+	// Rispondi con JSON usando respondWithJSON
+	respondWithJSON(w, http.StatusOK, commentList)
 }

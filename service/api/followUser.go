@@ -1,9 +1,7 @@
 package api
 
 import (
-	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/pietrofrizzi1/WASAPhoto/service/api/reqcontext"
@@ -46,26 +44,4 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 
 	// Invia la risposta
 	respondWithJSON(w, http.StatusCreated, follow)
-}
-
-// handleError gestisce gli errori di risposta HTTP
-func handleError(w http.ResponseWriter, err error) {
-	http.Error(w, err.Error(), http.StatusInternalServerError)
-}
-
-// parseUserID converte una stringa in un ID utente
-func parseUserID(idStr string) (uint64, error) {
-	return strconv.ParseUint(idStr, 10, 64)
-}
-
-// extractToken estrae il token dal header Authorization
-func extractToken(authHeader string) uint64 {
-	return getAuthorization(authHeader)
-}
-
-// respondWithJSON invia una risposta JSON
-func respondWithJSON(w http.ResponseWriter, statusCode int, data interface{}) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(statusCode)
-	_ = json.NewEncoder(w).Encode(data)
 }

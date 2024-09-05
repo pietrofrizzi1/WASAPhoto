@@ -1,8 +1,6 @@
 package api
 
 import (
-	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -10,16 +8,17 @@ import (
 )
 
 func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	fmt.Println("Ciao, mondo!")
-	var requestUser User
 	var userList []User
-	token := getAuthorization(r.Header.Get("Authorization"))
-	requestUser.Id = token
+
+	// Estrai il token usando extractToken
+	token := extractToken(r.Header.Get("Authorization"))
 
 	// Verifica dell'utente richiedente tramite il token
+	var requestUser User
+	requestUser.Id = token
 	dbrequestuser, err := rt.db.CheckUserById(requestUser.ConvertForDatabase())
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handleError(w, err) // Gestione dell'errore
 		return
 	}
 	requestUser.ConvertForApplication(dbrequestuser)
@@ -30,7 +29,7 @@ func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httpro
 	// Cerca utenti con nomi simili nel database
 	dbusers, err := rt.db.SearchUsersByUsername(username)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handleError(w, err) // Gestione dell'errore
 		return
 	}
 
@@ -41,9 +40,6 @@ func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httpro
 		userList = append(userList, user)
 	}
 
-	// Imposta l'intestazione del contenuto come JSON
-	w.Header().Set("Content-Type", "application/json")
-
-	// Codifica l'elenco degli utenti come JSON e scrivilo nella risposta
-	_ = json.NewEncoder(w).Encode(userList)
+	// Rispondi con JSON usando respondWithJSON
+	respondWithJSON(w, http.StatusOK, userList)
 }

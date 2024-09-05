@@ -81,7 +81,7 @@ components:
       minLength: 1
       maxLength: 500
     
-    commentssection:
+    commentsection:
       title: commentsection
       type: array
       minItems: 0
