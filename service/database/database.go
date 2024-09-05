@@ -133,7 +133,7 @@ type AppDatabase interface {
 	GetFollowingsCount(uint64) (int, error)
 	GetFollowStatus(uint64, uint64) (bool, error)
 
-	CreateBan(Ban) (Ban, error)
+	AddBan(Ban) (Ban, error)
 	RemoveBan(Ban) error
 	GetBan(User, uint64) (Ban, error)
 	GetBanById(Ban) (Ban, error)

@@ -129,7 +129,7 @@ components:
       type: object
       properties:
         comments:
-          $ref: '#/components/schemas/commentssection'
+          $ref: '#/components/schemas/commentsection'
         
         photo:
           $ref: '#/components/schemas/photos'
