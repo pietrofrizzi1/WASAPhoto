@@ -17,7 +17,7 @@ func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httpro
 	requestUser.Id = token
 
 	// Verifica dell'utente richiedente tramite il token
-	dbrequestuser, err := rt.db.CheckUserById(requestUser.CovertForDatabase())
+	dbrequestuser, err := rt.db.CheckUserById(requestUser.ConvertForDatabase())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

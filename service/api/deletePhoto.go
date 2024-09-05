@@ -31,7 +31,7 @@ func (rt *_router) deletePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	requestUser.Id = authToken
 
 	// Verify the user in the database
-	verifiedUser, err := rt.db.CheckUser(requestUser.CovertForDatabase())
+	verifiedUser, err := rt.db.CheckUser(requestUser.ConvertForDatabase())
 	if err != nil {
 		http.Error(w, "User verification failed: "+err.Error(), http.StatusInternalServerError)
 		return

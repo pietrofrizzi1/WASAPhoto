@@ -81,7 +81,7 @@ func (u *User) ConvertForApplication(user database.User) {
 	u.Username = user.Username
 }
 
-func (u *User) CovertForDatabase() database.User {
+func (u *User) ConvertForDatabase() database.User {
 	return database.User{
 		Id:       u.Id,
 		Username: u.Username,
@@ -98,7 +98,7 @@ func (s *PhotoStream) PhotoStreamConvertForApplication(photoStream database.Phot
 	s.CommentCount = photoStream.CommentCount
 }
 
-func (s *PhotoStream) PhotoStreamCovertForDatabase() database.PhotoStream {
+func (s *PhotoStream) PhotoStreamConvertForDatabase() database.PhotoStream {
 	return database.PhotoStream{
 		Id:           s.Id,
 		UserId:       s.UserId,
@@ -116,7 +116,7 @@ func (f *Follow) FollowConvertForApplication(follow database.Follow) {
 	f.UserId = follow.UserId
 }
 
-func (f *Follow) FollowCovertForDatabase() database.Follow {
+func (f *Follow) FollowConvertForDatabase() database.Follow {
 	return database.Follow{
 		FollowId:   f.FollowId,
 		FollowedId: f.FollowedId,
@@ -131,7 +131,7 @@ func (b *Ban) BanConvertForApplication(ban database.Ban) {
 	b.UserId = ban.UserId
 }
 
-func (b *Ban) BanCovertForDatabase() database.Ban {
+func (b *Ban) BanConvertForDatabase() database.Ban {
 	return database.Ban{
 		BanId:    b.BanId,
 		BannedId: b.BannedId,
@@ -149,7 +149,7 @@ func (p *Photo) PhotoConvertForApplication(photo database.Photo) {
 	p.CommentsCount = photo.CommentsCount
 }
 
-func (p *Photo) PhotoCovertForDatabase() database.Photo {
+func (p *Photo) PhotoConvertForDatabase() database.Photo {
 	return database.Photo{
 		Id:            p.Id,
 		UserId:        p.UserId,
@@ -168,7 +168,7 @@ func (l *Like) LikeConvertForApplication(like database.Like) {
 	l.PhotoOwner = like.PhotoOwner
 }
 
-func (l *Like) LikeCovertForDatabase() database.Like {
+func (l *Like) LikeConvertForDatabase() database.Like {
 	return database.Like{
 		LikeId:          l.LikeId,
 		UserIdentifier:  l.UserIdentifier,
@@ -185,7 +185,7 @@ func (c *Comment) CommentConvertForApplication(comment database.Comment) {
 	c.Content = comment.Content
 }
 
-func (c *Comment) CommentCovertForDatabase() database.Comment {
+func (c *Comment) CommentConvertForDatabase() database.Comment {
 	return database.Comment{
 		Id:         c.Id,
 		UserId:     c.UserId,

@@ -18,7 +18,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	token := getAuthorization(r.Header.Get("Authorization"))
 	user.Id = token
 	user.Username = ps.ByName("singleusername")
-	dbuser, err := rt.db.CheckUser(user.CovertForDatabase())
+	dbuser, err := rt.db.CheckUser(user.ConvertForDatabase())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -38,7 +38,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	photo.Date = currentTime.Format("2006-01-02 15:04:05")
 	photo.UserId = user.Id
 	photo.Id = id
-	dbphoto, err := rt.db.SetPhoto(photo.PhotoCovertForDatabase())
+	dbphoto, err := rt.db.SetPhoto(photo.PhotoConvertForDatabase())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

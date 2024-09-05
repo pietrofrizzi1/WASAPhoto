@@ -30,7 +30,7 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 	ban.BanId = id
 	ban.UserId = token
 	ban.BannedId = user.Id
-	err = rt.db.RemoveBan(ban.BanCovertForDatabase())
+	err = rt.db.RemoveBan(ban.BanConvertForDatabase())
 	if errors.Is(err, database.ErrBanNotFound) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return

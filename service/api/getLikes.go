@@ -16,7 +16,7 @@ func (rt *_router) getLikes(w http.ResponseWriter, r *http.Request, ps httproute
 	var requestUser User
 	token := getAuthorization(r.Header.Get("Authorization"))
 	requestUser.Id = token
-	dbrequestuser, err := rt.db.CheckUserById(requestUser.CovertForDatabase())
+	dbrequestuser, err := rt.db.CheckUserById(requestUser.ConvertForDatabase())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -35,7 +35,7 @@ func (rt *_router) getLikes(w http.ResponseWriter, r *http.Request, ps httproute
 		return
 	}
 	photo.Id = photoid
-	dbphoto, err := rt.db.CheckPhoto(photo.PhotoCovertForDatabase())
+	dbphoto, err := rt.db.CheckPhoto(photo.PhotoConvertForDatabase())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

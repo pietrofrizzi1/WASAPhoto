@@ -35,7 +35,7 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	like.UserIdentifier = token
 	like.PhotoIdentifier = photoid
 	like.PhotoOwner = user.Id
-	err = rt.db.RemoveLike(like.LikeCovertForDatabase())
+	err = rt.db.RemoveLike(like.LikeConvertForDatabase())
 	if errors.Is(err, database.ErrLikeNotFound) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return

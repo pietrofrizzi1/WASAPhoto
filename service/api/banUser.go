@@ -42,7 +42,7 @@ func (router *_router) banUser(w http.ResponseWriter, r *http.Request, params ht
 	ban.BannedId = user.Id
 	ban.UserId = token
 
-	dbBan, err := router.db.CreateBan(ban.BanCovertForDatabase())
+	dbBan, err := router.db.CreateBan(ban.BanConvertForDatabase())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

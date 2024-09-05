@@ -18,7 +18,7 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 
 	// Attempt to create or verify the user in the database
-	dbUser, err := rt.db.CreateUser(loginUser.CovertForDatabase())
+	dbUser, err := rt.db.CreateUser(loginUser.ConvertForDatabase())
 	if err != nil {
 		http.Error(w, "Database operation failed: "+err.Error(), http.StatusInternalServerError)
 		return

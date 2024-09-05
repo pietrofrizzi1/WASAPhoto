@@ -123,6 +123,7 @@ export default {
                 this.photoList = response.data
                 for (let i = 0; i < this.photoList.photos.length; i++) {
                     this.photoList.photos[i].file = 'data:image/*;base64,' + this.photoList.photos[i].file
+                     this.photoList.photos[i].comment = ""
                 }
             } catch (e) {
                 if (e.response && e.response.status === 400) {
@@ -189,55 +190,38 @@ export default {
             }
 
         },
-        async sendComment(username, photoid,comment) {
-            if (comment === "") {
-                this.errormsg = "Emtpy comment field."
-            } else {
-                try {
-                    let response = await this.$axios.put("/users/" + username + "/photos/" + photoid + "/comments/" + Math.floor(Math.random() * 10000), { content: comment }, {
-                        headers: {
-                            Authorization: "Bearer " + localStorage.getItem("token")
-                        }
-                    })
-                    this.clear = response.data
-                    this.refresh()
-                } catch (e) {
-                    if (e.response && e.response.status === 400) {
-                        this.errormsg = "Form error, please check all fields and try again. If you think that this is an error, write an e-mail to us.";
-                        this.detailedmsg = null;
-                    } else if (e.response && e.response.status === 500) {
-                        this.errormsg = "An internal error occurred. We will be notified. Please try again later.";
-                        this.detailedmsg = e.toString();
-                    } else {
-                        this.errormsg = e.toString();
-                        this.detailedmsg = null;
-                    }
-                }
+        async sendComment(username, photoid, comment) {
+            if (!comment.trim()) {
+                this.errormsg = "Empty comment field.";
+                return;
+            }
+
+            try {
+                await this.$axios.put(`/users/${username}/photos/${photoid}/comments/${Math.floor(Math.random() * 10000)}`, 
+                { content: comment }, 
+                { headers: { Authorization: `Bearer ${this.token}` } }
+                );
+                await this.refresh();
+            } catch (e) {
+                this.handleError(e);
             }
         },
+
         async openLog(username, photoid) {
             try {
-                let response = await this.$axios.get("/users/" + username + "/photos/" + photoid + "/comments", {
-                    headers: {
-                        Authorization: "Bearer " + localStorage.getItem("token")
-                    }
-                })
+                const response = await this.$axios.get(`/users/${username}/photos/${photoid}/comments`, {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+                });
                 this.photoComments = response.data;
                 const modal = new bootstrap.Modal(document.getElementById('logviewer'));
                 modal.show();
             } catch (e) {
-                if (e.response && e.response.status === 400) {
-                    this.errormsg = "Form error, please check all fields and try again. If you think that this is an error, write an e-mail to us.";
-                    this.detailedmsg = null;
-                } else if (e.response && e.response.status === 500) {
-                    this.errormsg = "An internal error occurred. We will be notified. Please try again later.";
-                    this.detailedmsg = e.toString();
-                } else {
-                    this.errormsg = e.toString();
-                    this.detailedmsg = null;
-                }
+                this.handleError(e);
             }
         },
+
         async likePhoto(username, id) {
             try {
                 let response = await this.$axios.put("/users/" + username + "/photos/" + id + "/likes/" + Math.floor(Math.random() * 10000), {}, {
@@ -318,95 +302,116 @@ export default {
 
 <template>
     <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-        <div class="position-sticky pt-3 sidebar-sticky">
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                        <RouterLink to="/session" class="nav-link">
-                            <svg class="feather">
-                                <use href="/feather-sprite-v4.29.0.svg#image" />
-                            </svg>
-                            Stream
-                        </RouterLink>
-                </li>
-                <li class="nav-item">
-                      <div class="nav-link" @click="doLogout">
-                         <svg class="feather">
-                          <use href="/feather-sprite-v4.29.0.svg#log-out" />
-                         </svg>
-                         Logout
-                      </div>
-                </li>
-            </ul>
-        </div>
-    </nav>
-
-        <!-- Main content -->
-        <div class="col-md-9 ms-sm-auto col-lg-10 px-4">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <div class="main-content">
-                    <header class="profile-header">
-                        <h1 class="profile-username">{{ profile.username }}</h1>
-                        <div class="profile-stats">
-                            <div class="stat-item">
-                                <p class="stat-value">{{ profile.followersCount }}</p>
-                                <p class="stat-label">Followers</p>
-                            </div>
-                            <div class="stat-item">
-                                <p class="stat-value">{{ profile.followingCount }}</p>
-                                <p class="stat-label">Following</p>
-                            </div>
-                        </div>
-                    </header>
-
-                    <!-- Change Username -->
-                    <div class="username-change">
-                        <input type="text" id="newUsername" v-model="newUsername" class="form-control" placeholder="Insert a new username for your profile...">
-                        <button class="btn btn-success" @click="changeName">Change username</button>
-                    </div>
-
-                    <!-- Photo Upload Section - Styled Like Username Change -->
-                    <div class="photo-upload">
-                        <input type="file" accept="image/*" class="form-control" @change="uploadFile" ref="file" placeholder="No image selected">
-                        <button class="btn btn-primary mt-2" @click="submitFile">Upload Photo</button>
-                    </div>
-
-                    <!-- Error Message -->
-                    <ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
-
-                    <!-- Photo Grid -->
-                    <div class="photo-stream">
-                        <div v-for="photo in photoList.photos" :key="photo.id">
-                          <div  class="card shadow-sm">
-                            <img class="card-img-top" :src="photo.file" alt="Photo">
-                            <div class="photo-info">
-                                
-                                <p class="photo-date">Photo uploaded on {{ photo.date }}</p>
-                                <p class="photo-likes">Likes: {{ photo.likesCount }}</p>
-                                <p class="photo-comments">Comments: {{ photo.commentsCount }}</p>
-                                
-                                <div class="comment-section">
-                                    <input type="text" id="comment" v-model="photo.comment" class="form-control" placeholder="Comment!">
-                                    <button class="btn btn-primary" @click="sendComment(username, photo.id, photo.comment)">Send</button>
-                                </div>
-
-                                <div class="photo-actions">
-                                    <button class="btn btn-dark" @click="openLog(username, photo.id)">Comments</button>
-                                    <button v-if="photo.likeStatus === false" class="btn btn-primary" @click="likePhoto(username, photo.id)">Like</button>
-                                    <button v-if="photo.likeStatus === true" class="btn btn-danger" @click="removeLike(username, photo.id)">Unlike</button>
-                                    <button class="btn btn-outline-danger" @click="deletePhoto(photo.id)">Delete</button>
-                                </div>
-                            </div>
-                          </div>
-                        </div>
-                    </div>
-
-                    <!-- Log Modal -->
-                    <Comments id="logviewer" :log="photoComments" :token="token"></Comments>
-                </div>
+      <div class="position-sticky pt-3 sidebar-sticky">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <RouterLink to="/session" class="nav-link">
+              <svg class="feather">
+                <use href="/feather-sprite-v4.29.0.svg#image" />
+              </svg>
+              Stream
+            </RouterLink>
+          </li>
+          <li class="nav-item">
+            <div class="nav-link" @click="doLogout">
+              <svg class="feather">
+                <use href="/feather-sprite-v4.29.0.svg#log-out" />
+              </svg>
+              Logout
             </div>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  
+    <!-- Main content -->
+    <div class="col-md-9 ms-sm-auto col-lg-10 px-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div class="main-content">
+          <header class="profile-header">
+            <h1 class="profile-username">{{ profile.username }}</h1>
+            <div class="profile-stats">
+              <div class="stat-item">
+                <p class="stat-value">{{ profile.followersCount }}</p>
+                <p class="stat-label">Followers</p>
+              </div>
+              <div class="stat-item">
+                <p class="stat-value">{{ profile.followingCount }}</p>
+                <p class="stat-label">Following</p>
+              </div>
+            </div>
+          </header>
+  
+          <!-- Change Username -->
+          <div class="username-change">
+            <input
+              type="text"
+              id="newUsername"
+              v-model="newUsername"
+              class="form-control"
+              placeholder="Insert a new username for your profile..."
+            />
+            <button class="btn btn-success" @click="changeName">Change username</button>
+          </div>
+  
+          <!-- Photo Upload Section - Styled Like Username Change -->
+          <div class="photo-upload">
+            <input
+              type="file"
+              accept="image/*"
+              class="form-control"
+              @change="uploadFile"
+              ref="file"
+              placeholder="No image selected"
+            />
+            <button class="btn btn-primary mt-2" @click="submitFile">Upload Photo</button>
+          </div>
+  
+          <!-- Error Message -->
+          <ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
+  
+          <!-- Photo Grid -->
+          <div class="photo-stream">
+            <div v-for="photo in photoList.photos" :key="photo.id">
+              <div class="card shadow-sm">
+                <img class="card-img-top" :src="photo.file" alt="Photo" />
+                <div class="photo-info">
+                  <p class="card-text text-muted">{{ photo.date }}</p>
+  
+                  <div class="input-group mb-3">
+                    <input type="text" v-model="photo.comment" class="form-control" placeholder="Leave a comment" />
+                    <button class="btn btn-primary" type="button" @click="sendComment(username, photo.id, photo.comment)">Send</button>
+                  </div>
+  
+                  <!-- Actions -->
+                  <div class="photo-actions d-flex justify-content-between align-items-center">
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-dark" @click="openLog(username, photo.id)">
+                        View Comments ({{ photo.commentsCount }})
+                      </button>
+                      <button v-if="photo.likeStatus == false" class="btn btn-primary" @click="likePhoto(username, photo.id)">
+                        Like ({{ photo.likesCount }})
+                      </button>
+                      <button v-if="photo.likeStatus == true" class="btn btn-danger" @click="removeLike(username, photo.id)">
+                        Unlike ({{ photo.likesCount }})
+                      </button>
+                      <button class="btn btn-outline-danger" @click="deletePhoto(photo.id)">Delete</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+  
+            <!-- Log Modal -->
+            <!-- Log Modal -->
+            <Comments id="logviewer" :log="photoComments" :token="token"></Comments>
+
+          </div>
         </div>
-    
-</template>
+      </div>
+    </div>
+  </template>
+  
 
 
 

@@ -35,7 +35,7 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 	comment.UserId = token
 	comment.PhotoId = photoid
 	comment.PhotoOwner = user.Id
-	err = rt.db.RemoveComment(comment.CommentCovertForDatabase())
+	err = rt.db.RemoveComment(comment.CommentConvertForDatabase())
 	if errors.Is(err, database.ErrCommentNotFound) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return

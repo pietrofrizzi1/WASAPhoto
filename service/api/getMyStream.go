@@ -23,7 +23,7 @@ func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httpro
 	user.Id = token
 	user.Username = username
 	// get the id of the user that wants the stream
-	dbuser, err := rt.db.CheckUser(user.CovertForDatabase())
+	dbuser, err := rt.db.CheckUser(user.ConvertForDatabase())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -31,7 +31,7 @@ func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httpro
 	user.ConvertForApplication(dbuser)
 
 	// get the stream of the user
-	photos, err := rt.db.GetMyStream(user.CovertForDatabase())
+	photos, err := rt.db.GetMyStream(user.ConvertForDatabase())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

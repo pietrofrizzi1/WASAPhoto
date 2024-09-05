@@ -53,7 +53,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	newComment.PhotoOwner = user.Id
 
 	// Save the comment to the database
-	savedCommentData, err := rt.db.SetComment(newComment.CommentCovertForDatabase())
+	savedCommentData, err := rt.db.SetComment(newComment.CommentConvertForDatabase())
 	if err != nil {
 		http.Error(w, "Error saving comment: "+err.Error(), http.StatusInternalServerError)
 		return

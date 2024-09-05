@@ -37,7 +37,7 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 	follow.UserId = extractToken(r.Header.Get("Authorization"))
 
 	// Salva la relazione di follow nel database
-	dbFollow, err := rt.db.SetFollow(follow.FollowCovertForDatabase())
+	dbFollow, err := rt.db.SetFollow(follow.FollowConvertForDatabase())
 	if err != nil {
 		handleError(w, err)
 		return

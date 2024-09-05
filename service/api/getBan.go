@@ -14,13 +14,13 @@ func (rt *_router) getBan(w http.ResponseWriter, r *http.Request, ps httprouter.
 	var ban Ban
 	token := getAuthorization(r.Header.Get("Authorization"))
 	user.Username = ps.ByName("singleusername")
-	dbuser, err := rt.db.CheckUserByUsername(user.CovertForDatabase())
+	dbuser, err := rt.db.CheckUserByUsername(user.ConvertForDatabase())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	user.ConvertForApplication(dbuser)
-	dban, err := rt.db.GetBan(user.CovertForDatabase(), token)
+	dban, err := rt.db.GetBan(user.ConvertForDatabase(), token)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

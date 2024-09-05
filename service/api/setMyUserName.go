@@ -18,7 +18,7 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, ps http
 	}
 	token := getAuthorization(r.Header.Get("Authorization"))
 	user.Id = token
-	dbuser, err := rt.db.SetUsername(user.CovertForDatabase(), username)
+	dbuser, err := rt.db.SetUsername(user.ConvertForDatabase(), username)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

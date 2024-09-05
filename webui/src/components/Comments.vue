@@ -9,7 +9,7 @@ export default {
 	methods: {
 		async deleteComment(username, photoid, commentid) {
 			try {
-				let response = await this.$axios.delete("/users/" + username + "/photo/" + photoid + "/comment/" + commentid, {
+				let response = await this.$axios.delete("/users/" + username + "/photos/" + photoid + "/comments/" + commentid, {
 					headers: {
 						Authorization: "Bearer " + localStorage.getItem("token")
 					}

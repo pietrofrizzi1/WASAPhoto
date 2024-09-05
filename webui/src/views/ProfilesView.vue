@@ -247,29 +247,19 @@ export default {
 
         },
         async sendComment(username, photoid, comment) {
-            if (comment === "") {
-                this.errormsg = "Emtpy comment field."
-            } else {
-                try {
-                    let response = await this.$axios.put("/users/" + username + "/photos/" + photoid + "/comments/" + Math.floor(Math.random() * 10000), { content: comment }, {
-                        headers: {
-                            Authorization: "Bearer " + localStorage.getItem("token")
-                        }
-                    })
-                    this.clear = response.data
-                    this.refresh()
-                } catch (e) {
-                    if (e.response && e.response.status === 400) {
-                        this.errormsg = "Form error, please check all fields and try again. If you think that this is an error, write an e-mail to us.";
-                        this.detailedmsg = null;
-                    } else if (e.response && e.response.status === 500) {
-                        this.errormsg = "An internal error occurred. We will be notified. Please try again later.";
-                        this.detailedmsg = e.toString();
-                    } else {
-                        this.errormsg = e.toString();
-                        this.detailedmsg = null;
-                    }
-                }
+            if (!comment.trim()) {
+                this.errormsg = "Empty comment field.";
+                return;
+            }
+
+            try {
+                await this.$axios.put(`/users/${username}/photos/${photoid}/comments/${Math.floor(Math.random() * 10000)}`, 
+                { content: comment }, 
+                { headers: { Authorization: `Bearer ${this.token}` } }
+                );
+                await this.refresh();
+            } catch (e) {
+                this.handleError(e);
             }
         },
         async openLog(username, photoid) {
@@ -427,23 +417,27 @@ export default {
                 <div class="card shadow-sm">
                     <img class="card-img-top" :src="photo.file" alt="Card image cap">
                     <div class="card-body">
-                        <RouterLink :to="'/users/' + profile.username + '/view'" class="nav-link">
-                            <button type="button" class="btn btn-outline-primary mb-2">{{ profile.username }}</button>
-                        </RouterLink>
-                        <div class="d-flex justify-content-between mb-2">
-                            <p class="card-text">Likes: {{ photo.likesCount }}</p>
-                            <p class="card-text">Comments: {{ photo.commentsCount }}</p>
-                        </div>
-                        <p class="card-text mb-2">Uploaded on: {{ photo.date }}</p>
-                        <div class="input-group">
-                            <input type="text" v-model="photo.comment" class="form-control" placeholder="Comment!" aria-label="Comment">
-                            <button class="btn btn-primary" @click="sendComment(profile.username, photo.id, photo.comment)">Send</button>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mt-2">
-                            <button class="btn btn-dark" @click="openLog(profile.username, photo.id)">Comments</button>
-                            <Comments id="logviewer" :log="photoComments" :token="token"></Comments>
-                            <button v-if="photo.likeStatus == false" class="btn btn-primary" @click="likePhoto(profile.username, photo.id)">Like</button>
-                            <button v-if="photo.likeStatus == true" class="btn btn-danger" @click="removeLike(profile.username, photo.id)">Unlike</button>
+                        
+                        <strong>Posted by: {{ profile.username }}</strong>
+
+                        
+                    </div>
+
+                    <p class="card-text text-muted">{{ photo.date }}</p>
+
+                    <!-- Comment Input -->
+                    <div class="input-group mb-3">
+                        <input type="text" v-model="photo.comment" class="form-control" placeholder="Leave a comment">
+					    <button class="btn btn-primary" type="button" @click="sendComment(profile.username, photo.id, photo.comment)">Send</button>
+                    
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="photo-actions d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                        <button type="button" class="btn btn-dark" @click="openLog(profile.username, photo.id)">View Comments ({{ photo.commentsCount }})</button>
+                        <button v-if="photo.likeStatus == false" class="btn btn-primary" @click="likePhoto(profile.username, photo.id)">Like ({{ photo.likesCount }})</button>
+                        <button v-if="photo.likeStatus == true" class="btn btn-danger" @click="removeLike(profile.username, photo.id)">Unlike ({{ photo.likesCount }})</button>
                         </div>
                     </div>
                 </div>
@@ -451,7 +445,8 @@ export default {
             </div>
            
         </div>
-        
+        <Comments id="logviewer" :log="photoComments" :token="token"></Comments>
+	
     </div>
 </template>
 

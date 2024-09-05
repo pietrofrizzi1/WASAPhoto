@@ -135,88 +135,88 @@ export default {
     },
 
     
-	async removeLike(username, photoId) {
-		try {
-			// 1. Recupera tutti i like per la foto specificata
-			const response = await this.$axios.get(`/users/${username}/photos/${photoId}/likes`, {
-			headers: { Authorization: `Bearer ${this.token}` }
-			});
+    async removeLike(username, id) {
+            try {
+                let response = await this.$axios.get("/users/" + username + "/photos/" + id + "/likes", {
+                    headers: {
+                        Authorization: "Bearer " + localStorage.getItem("token")
+                    }
+                })
+                this.like = response.data
+            } catch (e) {
+                if (e.response && e.response.status === 400) {
+                    this.errormsg = "Form error, please check all fields and try again. If you think that this is an error, write an e-mail to us.";
+                    this.detailedmsg = null;
+                } else if (e.response && e.response.status === 500) {
+                    this.errormsg = "An internal error occurred. We will be notified. Please try again later.";
+                    this.detailedmsg = e.toString();
+                } else {
+                    this.errormsg = e.toString();
+                    this.detailedmsg = null;
+                }
+            }
 
-			console.log("Likes response:", response.data); // Debugging
-
-			// 2. Verifica che la risposta sia un array
-			if (!Array.isArray(response.data)) {
-			this.errormsg = "Formato di risposta inaspettato.";
-			return;
-			}
-
-			// 3. Trova il like associato all'utente corrente
-			const userLike = response.data.find(like => like.username === this.username);
-			// Se usi userId, sostituisci con: like.userId === this.userId
-
-			console.log("User's like:", userLike); // Debugging
-
-			if (!userLike) {
-			this.errormsg = "Like non trovato per l'utente corrente.";
-			return;
-			}
-
-			// 4. Elimina il like utilizzando likeId
-			await this.$axios.delete(`/users/${username}/photos/${photoId}/likes/${userLike.likeId}`, {
-			headers: { Authorization: `Bearer ${this.token}` }
-			});
-
-			// 5. Opzionalmente, imposta un messaggio di successo
-			this.successmsg = "Like rimosso con successo.";
-
-			// 6. Aggiorna lo stream per riflettere il cambiamento
-			await this.refresh();
-		} catch (e) {
-			console.error("Errore in removeLike:", e); // Debugging
-        this.handleError(e);
-    }
+            try {
+                let response = await this.$axios.delete("/users/" + username + "/photos/" + id + "/likes/" + this.like.likeId, {
+                    headers: {
+                        Authorization: "Bearer " + localStorage.getItem("token")
+                    }
+                })
+                this.clear = response.data
+                this.refresh()
+            } catch (e) {
+                if (e.response && e.response.status === 400) {
+                    this.errormsg = "Form error, please check all fields and try again. If you think that this is an error, write an e-mail to us.";
+                    this.detailedmsg = null;
+                } else if (e.response && e.response.status === 500) {
+                    this.errormsg = "An internal error occurred. We will be notified. Please try again later.";
+                    this.detailedmsg = e.toString();
+                } else {
+                    this.errormsg = e.toString();
+                    this.detailedmsg = null;
+                }
+            }
     },
+    
 
-	
 
-
-    handleError(e) {
-      if (e.response) {
-        switch (e.response.status) {
-          case 400:
-            this.errormsg = "Form error, please check all fields and try again. If you think that this is an error, write an e-mail to us.";
-            break;
-          case 500:
-            this.errormsg = "An internal error occurred. We will be notified. Please try again later.";
-            this.detailedmsg = e.toString();
-            break;
-          default:
-            this.errormsg = e.toString();
+      handleError(e) {
+        if (e.response) {
+          switch (e.response.status) {
+            case 400:
+              this.errormsg = "Form error, please check all fields and try again. If you think that this is an error, write an e-mail to us.";
+              break;
+            case 500:
+              this.errormsg = "An internal error occurred. We will be notified. Please try again later.";
+              this.detailedmsg = e.toString();
+              break;
+            default:
+              this.errormsg = e.toString();
+          }
+        } else {
+          this.errormsg = "An unexpected error occurred.";
         }
-      } else {
-        this.errormsg = "An unexpected error occurred.";
-      }
-      this.detailedmsg = null;
-    },
+        this.detailedmsg = null;
+      },
 
-    async doLogout() {
-      localStorage.removeItem("token");
-      localStorage.removeItem("username");
-      this.$router.push({ path: '/' });
-    },
+      async doLogout() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("username");
+        this.$router.push({ path: '/' });
+      },
 
-    async ViewProfile() {
-      this.$router.push({ path: `/users/${this.username}/profile` });
-    },
+      async ViewProfile() {
+        this.$router.push({ path: `/users/${this.username}/profile` });
+      },
 
-    async SearchUser() {
-      if (!this.searchUserUsername.trim()) {
-        this.errormsg = "Empty username field.";
-        return;
-      }
-      this.$router.push({ path: `/users/${this.username}/search`, query: { q: this.searchUserUsername } });
+      async SearchUser() {
+        if (!this.searchUserUsername.trim()) {
+          this.errormsg = "Empty username field.";
+          return;
+        }
+        this.$router.push({ path: `/users/${this.username}/search`, query: { q: this.searchUserUsername } });
+      },
     },
-  },
 
   mounted() {
     this.getStream();
@@ -283,11 +283,11 @@ export default {
 					
 				</div>
 
-				<p class="card-text text-muted">Uploaded on: {{ photo.date }}</p>
+				<p class="card-text text-muted">{{ photo.date }}</p>
 
 				<!-- Comment Input -->
 				<div class="input-group mb-3">
-					<input type="text" v-model="photo.comment" class="form-control" placeholder="Add a comment">
+					<input type="text" v-model="photo.comment" class="form-control" placeholder="Leave a comment">
 					<button class="btn btn-primary" type="button" @click="sendComment(photo.username, photo.id, photo.comment)">Send</button>
 				</div>
 
